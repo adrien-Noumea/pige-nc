@@ -581,10 +581,19 @@ function extractFromText(texte) {
   [...t.matchAll(/\b[FT](\d)\b/gi)].forEach(m => piecesSet.add("F"+m[1]));
   if(/\bstudio\b/i.test(t)) piecesSet.add("F1");
   const numPi = t.match(/(\d)\s*pièces?/i); if(numPi) piecesSet.add("F"+numPi[1]);
-  if(piecesSet.size) f.type_bien = [...piecesSet][0];
+  if(piecesSet.size) {
+    f.type_bien = [...piecesSet][0];
+    const n = parseInt(f.type_bien.replace(/\D/g,""));
+    if(!isNaN(n)) f.nb_pieces = n + " pièce" + (n>1?"s":"");
+  }
   else if(/\bvilla\b/i.test(t)) f.type_bien = "Villa";
   else if(/\bmaison\b/i.test(t)) f.type_bien = "Maison";
   else if(/appart/i.test(t)) f.type_bien = "Appartement";
+  // Chercher Fx même si villa/maison détecté
+  if(!f.nb_pieces) {
+    const fx = t.match(/\b[FT](\d)\b/i);
+    if(fx) { const n=parseInt(fx[1]); f.nb_pieces = n+" pièce"+(n>1?"s":""); }
+  }
 
   // ── SURFACE ──
   const surExcl = [];
@@ -773,7 +782,9 @@ async function extractAll() {
 // ════════════════════════════════════════════════════════
 function computeMarketScore(fiche) {
   if (!fiche.loyer || !fiche.quartier) return null;
-  const q = Object.keys(PRIX_REF).find(k => fiche.quartier.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(fiche.quartier.toLowerCase()));
+  // Comparaison normalisée pour matcher "Vallée du Tir" = "Vallée-du-Tir"
+  const fNorm = normQ(fiche.quartier);
+  const q = Object.keys(PRIX_REF).find(k => normQ(k) === fNorm || normQ(k).includes(fNorm) || fNorm.includes(normQ(k)));
   if (!q) return null;
   const ref = PRIX_REF[q];
   const t = (fiche.type_bien||'').toLowerCase();
@@ -1096,7 +1107,7 @@ function renderDetail(f) {
 
     <div class="dgrid">
       <div class="dbox"><div class="dbox-l">Surface</div><div class="dbox-v">${f.surface?f.surface+' m²':'—'}</div></div>
-      <div class="dbox"><div class="dbox-l">Pièces</div><div class="dbox-v">${f.nb_pieces||'—'}</div></div>
+      <div class="dbox"><div class="dbox-l">Pièces</div><div class="dbox-v">${f.nb_pieces||f.type_bien||'—'}</div></div>
       <div class="dbox"><div class="dbox-l">Étage</div><div class="dbox-v">${f.etage||'—'}</div></div>
       <div class="dbox"><div class="dbox-l">Meublé</div><div class="dbox-v">${f.meuble?'✓ Oui':'✕ Non'}</div></div>
       <div class="dbox"><div class="dbox-l">Parking</div><div class="dbox-v">${f.parking?'✓ Oui':'✕ Non'}</div></div>
