@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pige NC — Outil de prospection locative Nouméa</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090c;--s1:#111318;--s2:#181b22;--s3:#1f232c;--s4:#272c37;--s5:#2f3542;
+  --b1:#252b36;--b2:#313847;--b3:#3d4558;
+  --acc:#e2ff3f;--acc2:#bdd430;--acc3:#96a824;
+  --tx:#eaecf0;--tx2:#9aa4b5;--tx3:#6370820;--mu:#5a6478;--mu2:#8a95a8;
+  --gr:#27c76e;--or:#f0a020;--re:#ef4444;--bl:#3d8ef5;--pu:#8b5cf6;--te:#14b8a6;--pi:#ec4899;
+  --r:10px;--rl:14px;--rxl:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--tx);font-size:13px;}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ══ HEADER ══ */
+#hdr{height:52px;background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 16px;gap:14px;position:relative;z-index:50;}
+.logo{background:var(--acc);color:var(--bg);font-weight:800;font-size:10px;letter-spacing:.12em;padding:4px 8px;border-radius:5px;text-transform:uppercase;flex-shrink:0;}
+.hdr-name{font-size:14px;font-weight:700;flex-shrink:0;}
+.hdr-sub{font-size:10px;color:var(--mu2);margin-top:1px;}
+.hdr-stats{display:flex;gap:5px;margin-left:auto;}
+.sc{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:5px 10px;text-align:center;min-width:56px;}
+.sc-n{font-size:16px;font-weight:800;font-family:'DM Mono',monospace;color:var(--acc);line-height:1;}
+.sc-l{font-size:8px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
+.sc.c-bl .sc-n{color:var(--bl);}
+.sc.c-gr .sc-n{color:var(--gr);}
+.sc.c-pu .sc-n{color:var(--pu);}
+.sc.c-or .sc-n{color:var(--or);}
+.hdr-btns{display:flex;gap:6px;flex-shrink:0;}
+
+/* ══ LAYOUT ══ */
+#app{display:grid;grid-template-columns:340px 1fr;height:calc(100vh - 52px);}
+
+/* ══ SIDEBAR ══ */
+#sb{background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
+.tabs{display:flex;border-bottom:1px solid var(--b1);}
+.tab{flex:1;padding:10px 4px;font-size:10px;font-weight:700;color:var(--mu2);border:none;background:transparent;cursor:pointer;font-family:'Syne',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;text-transform:uppercase;letter-spacing:.06em;}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc);}
+.tc{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.tc.on{display:flex;}
+
+/* ══ INPUTS ══ */
+.inp{width:100%;background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--r);color:var(--tx);font-family:'Syne',sans-serif;font-size:12px;padding:8px 11px;outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--acc);}
+.inp::placeholder{color:var(--mu);}
+textarea.inp{resize:vertical;font-family:'DM Mono',monospace;font-size:11px;line-height:1.6;}
+select.inp{cursor:pointer;}
+
+/* ══ BOUTONS ══ */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;}
+.btn-acc{background:var(--acc);color:var(--bg);width:100%;justify-content:center;}
+.btn-acc:hover{background:var(--acc2);transform:translateY(-1px);}
+.btn-acc:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-g{background:var(--s3);color:var(--mu2);border:1px solid var(--b1);}
+.btn-g:hover{color:var(--tx);border-color:var(--b2);}
+.btn-gr{background:rgba(39,199,110,.1);color:var(--gr);border:1px solid rgba(39,199,110,.2);}
+.btn-gr:hover{background:rgba(39,199,110,.18);}
+.btn-or{background:rgba(240,160,32,.1);color:var(--or);border:1px solid rgba(240,160,32,.2);}
+.btn-or:hover{background:rgba(240,160,32,.18);}
+.btn-re{background:rgba(239,68,68,.1);color:var(--re);border:1px solid rgba(239,68,68,.2);}
+.btn-re:hover{background:rgba(239,68,68,.18);}
+.btn-pu{background:rgba(139,92,246,.1);color:var(--pu);border:1px solid rgba(139,92,246,.2);}
+.btn-pu:hover{background:rgba(139,92,246,.18);}
+.btn-bl{background:rgba(61,142,245,.1);color:var(--bl);border:1px solid rgba(61,142,245,.2);}
+.btn-bl:hover{background:rgba(61,142,245,.18);}
+.btn-sm{padding:5px 10px;font-size:10px;}
+.btn-xs{padding:3px 8px;font-size:9px;}
+.row{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ══ SECTION TITLE ══ */
+.st{font-size:9px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
+.st::after{content:'';flex:1;height:1px;background:var(--b1);}
+
+/* ══ PILLS FILTRES ══ */
+.pills{display:flex;gap:4px;flex-wrap:wrap;}
+.pill{padding:3px 9px;border-radius:20px;font-size:9px;font-weight:700;cursor:pointer;border:1.5px solid var(--b1);background:transparent;color:var(--mu2);font-family:'Syne',sans-serif;transition:all .15s;text-transform:uppercase;letter-spacing:.05em;}
+.pill:hover{border-color:var(--b2);color:var(--tx);}
+.pill.on{background:var(--acc);border-color:var(--acc);color:var(--bg);}
+
+/* ══ CARTE FICHE ══ */
+.fc{background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--r);padding:10px 11px;margin-bottom:6px;cursor:pointer;transition:all .15s;position:relative;}
+.fc:hover{border-color:var(--b2);background:var(--s3);}
+.fc.sel{border-color:var(--acc);background:rgba(226,255,63,.03);}
+.fc.rl{border-left:3px solid var(--or);}
+.fc.dup-warn{border-left:3px solid var(--re);}
+.fc-r1{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:6px;}
+.fc-badges{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sdot-new{background:var(--acc);}
+.sdot-called{background:var(--bl);}
+.sdot-interested{background:var(--gr);}
+.sdot-mandate{background:var(--pu);box-shadow:0 0 5px rgba(139,92,246,.5);}
+.sdot-refused{background:var(--re);}
+.tbadge{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;}
+.tb-studio{background:rgba(61,142,245,.15);color:var(--bl);}
+.tb-f2{background:rgba(39,199,110,.15);color:var(--gr);}
+.tb-f3{background:rgba(240,160,32,.15);color:var(--or);}
+.tb-f4{background:rgba(139,92,246,.15);color:var(--pu);}
+.tb-maison{background:rgba(239,68,68,.15);color:var(--re);}
+.tb-villa{background:rgba(20,184,166,.15);color:var(--te);}
+.tb-autre{background:rgba(122,132,148,.1);color:var(--mu2);}
+.fresh-badge{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.fresh-new{background:rgba(226,255,63,.12);color:var(--acc);}
+.fresh-old{background:rgba(90,100,120,.12);color:var(--mu);}
+.fc-prix{font-family:'DM Mono',monospace;font-size:13px;color:var(--acc);white-space:nowrap;}
+.fc-loc{font-size:10px;color:var(--mu2);margin-bottom:4px;}
+.fc-contact{font-size:11px;color:var(--tx);font-weight:600;}
+.fc-tel{font-family:'DM Mono',monospace;font-size:10px;color:var(--gr);}
+.fc-rl{font-size:9px;color:var(--or);margin-top:3px;}
+.fc-mkt{font-size:9px;margin-top:3px;}
+.delbtn{position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:3px;background:transparent;border:none;color:var(--mu);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .15s;}
+.fc:hover .delbtn{opacity:1;}
+.delbtn:hover{background:rgba(239,68,68,.15);color:var(--re);}
+
+/* ══ DETAIL ══ */
+#pr{display:flex;flex-direction:column;overflow:hidden;}
+#es{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--mu);text-align:center;padding:40px;}
+#dv{flex:1;overflow-y:auto;padding:20px;}
+.dh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:14px;}
+.dh-title{font-size:19px;font-weight:800;}
+.dh-meta{font-size:11px;color:var(--mu2);margin-top:3px;line-height:1.5;}
+.dh-prix{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:var(--acc);white-space:nowrap;}
+.dh-charges{font-size:12px;color:var(--mu);}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.dbox{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:11px;}
+.dbox-l{font-size:8px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+.dbox-v{font-size:13px;font-weight:700;color:var(--tx);}
+.dbox-v.tel{font-family:'DM Mono',monospace;color:var(--gr);font-size:14px;}
+.dbox-v.loyer{font-family:'DM Mono',monospace;color:var(--acc);}
+
+/* ══ MARKET SCORE ══ */
+.mkt-box{border-radius:var(--r);padding:13px 15px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.mkt-box.mkt-good{background:rgba(39,199,110,.07);border:1px solid rgba(39,199,110,.2);}
+.mkt-box.mkt-fair{background:rgba(240,160,32,.07);border:1px solid rgba(240,160,32,.2);}
+.mkt-box.mkt-high{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);}
+.mkt-box.mkt-unknown{background:var(--s2);border:1px solid var(--b1);}
+.mkt-icon{font-size:24px;flex-shrink:0;}
+.mkt-info{flex:1;}
+.mkt-title{font-size:12px;font-weight:700;margin-bottom:2px;}
+.mkt-sub{font-size:11px;color:var(--mu2);}
+.mkt-score{font-family:'DM Mono',monospace;font-size:22px;font-weight:800;flex-shrink:0;}
+.score-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;margin-top:6px;}
+.score-fill{height:100%;border-radius:3px;transition:width .5s;}
+
+/* ══ STATUS SEL ══ */
+.ssel{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px;}
+.sbtn{padding:5px 11px;border-radius:20px;font-size:9px;font-weight:700;cursor:pointer;border:1.5px solid var(--b1);background:transparent;color:var(--mu2);font-family:'Syne',sans-serif;transition:all .15s;text-transform:uppercase;letter-spacing:.05em;}
+.sbtn.on-new{border-color:var(--acc);color:var(--acc);background:rgba(226,255,63,.08);}
+.sbtn.on-called{border-color:var(--bl);color:var(--bl);background:rgba(61,142,245,.08);}
+.sbtn.on-interested{border-color:var(--gr);color:var(--gr);background:rgba(39,199,110,.08);}
+.sbtn.on-mandate{border-color:var(--pu);color:var(--pu);background:rgba(139,92,246,.1);}
+.sbtn.on-refused{border-color:var(--re);color:var(--re);background:rgba(239,68,68,.08);}
+
+/* ══ SCRIPT ══ */
+.script-box{background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--acc);border-radius:var(--r);padding:14px;margin-bottom:16px;}
+.ss{margin-bottom:12px;}
+.ss:last-child{margin-bottom:0;}
+.ss-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);margin-bottom:2px;}
+.ss-txt{font-size:11px;line-height:1.7;color:var(--tx);}
+.ss-obj .ss-txt{color:var(--mu2);font-style:italic;}
+
+/* ══ LOG APPELS ══ */
+.log-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px;margin-bottom:16px;max-height:160px;overflow-y:auto;}
+.log-entry{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid var(--b1);align-items:flex-start;}
+.log-entry:last-child{border-bottom:none;}
+.log-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.log-status{font-size:9px;font-weight:700;flex-shrink:0;}
+.log-note{font-size:10px;color:var(--mu2);}
+
+/* ══ RELANCE ══ */
+.rl-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.rl-lbl{font-size:10px;font-weight:600;color:var(--mu2);flex-shrink:0;}
+.rl-inp{background:var(--s2);border:1px solid var(--b1);border-radius:7px;color:var(--tx);font-family:'Syne',sans-serif;font-size:11px;padding:5px 9px;outline:none;transition:border-color .2s;}
+.rl-inp:focus{border-color:var(--acc);}
+.rl-current{font-size:10px;color:var(--or);font-family:'DM Mono',monospace;}
+
+/* ══ SMS TEMPLATE ══ */
+.sms-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px;margin-bottom:16px;}
+.sms-txt{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu2);line-height:1.7;white-space:pre-wrap;word-break:break-word;margin-bottom:8px;}
+
+/* ══ ANNONCE ══ */
+.ann-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:11px;margin-bottom:16px;}
+.ann-txt{font-family:'DM Mono',monospace;font-size:9px;color:var(--mu2);line-height:1.7;white-space:pre-wrap;word-break:break-word;}
+
+/* ══ QUICK CALL MODE ══ */
+#qcm{display:none;position:fixed;inset:0;background:var(--bg);z-index:1000;flex-direction:column;}
+#qcm.open{display:flex;}
+.qcm-hdr{background:var(--s1);border-bottom:1px solid var(--b1);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.qcm-prog{font-size:12px;color:var(--mu2);}
+.qcm-prog strong{color:var(--acc);font-family:'DM Mono',monospace;}
+.qcm-body{flex:1;display:grid;grid-template-columns:1fr 380px;overflow:hidden;}
+.qcm-main{padding:32px;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.qcm-type{font-size:14px;font-weight:700;color:var(--mu2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.qcm-bien{font-size:36px;font-weight:800;margin-bottom:6px;}
+.qcm-loc{font-size:18px;color:var(--mu2);margin-bottom:24px;}
+.qcm-prix{font-family:'DM Mono',monospace;font-size:48px;font-weight:500;color:var(--acc);margin-bottom:8px;}
+.qcm-charges{font-size:14px;color:var(--mu);margin-bottom:32px;}
+.qcm-contact{background:var(--s2);border:1px solid var(--b2);border-radius:var(--rl);padding:20px 30px;margin-bottom:28px;min-width:280px;}
+.qcm-name{font-size:15px;font-weight:700;margin-bottom:6px;}
+.qcm-tel{font-family:'DM Mono',monospace;font-size:30px;color:var(--gr);font-weight:500;}
+.qcm-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.qcm-btn{padding:14px 22px;border-radius:var(--rl);font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;border:none;transition:all .15s;min-width:110px;}
+.qcm-btn:hover{transform:translateY(-2px);}
+.qcm-side{background:var(--s1);border-left:1px solid var(--b1);padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.qcm-side-title{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.qcm-kbd{font-size:10px;color:var(--mu);text-align:center;margin-top:auto;padding-top:16px;}
+.kbd{display:inline-block;background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:2px 6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--mu2);}
+
+/* ══ PIPELINE ══ */
+.pipe-wrap{flex:1;overflow-x:auto;padding:14px;display:flex;gap:10px;}
+.pipe-col{flex-shrink:0;width:200px;display:flex;flex-direction:column;gap:6px;}
+.pipe-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:7px 10px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;}
+.p-new{background:rgba(226,255,63,.08);color:var(--acc);}
+.p-called{background:rgba(61,142,245,.08);color:var(--bl);}
+.p-int{background:rgba(39,199,110,.08);color:var(--gr);}
+.p-man{background:rgba(139,92,246,.1);color:var(--pu);}
+.p-ref{background:rgba(239,68,68,.07);color:var(--re);}
+.pipe-card{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:9px;cursor:pointer;transition:all .15s;font-size:10px;}
+.pipe-card:hover{border-color:var(--b2);background:var(--s3);}
+
+/* ══ ANALYTICS ══ */
+.ana-wrap{flex:1;overflow-y:auto;padding:16px;}
+.ana-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:20px;}
+.ana-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:14px;}
+.ana-val{font-family:'DM Mono',monospace;font-size:28px;font-weight:800;margin-bottom:2px;}
+.ana-lbl{font-size:10px;color:var(--mu2);}
+.ana-sub{font-size:9px;color:var(--mu);margin-top:2px;}
+.conv-bar{height:8px;background:var(--s3);border-radius:4px;overflow:hidden;margin-top:6px;}
+.conv-fill{height:100%;background:var(--acc);border-radius:4px;}
+.qk-table{width:100%;border-collapse:collapse;}
+.qk-table th{font-size:9px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;padding:6px 8px;text-align:left;border-bottom:1px solid var(--b1);}
+.qk-table td{font-size:11px;padding:7px 8px;border-bottom:1px solid var(--b1);color:var(--tx);}
+.qk-table tr:last-child td{border-bottom:none;}
+.qk-table td.mono{font-family:'DM Mono',monospace;color:var(--acc);}
+
+/* ══ PRIX REF ══ */
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;}
+.ref-row{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;gap:10px;}
+.ref-q{font-size:12px;font-weight:600;flex:1;}
+.ref-inp{width:90px;background:var(--s1);border:1px solid var(--b1);border-radius:6px;color:var(--acc);font-family:'DM Mono',monospace;font-size:11px;padding:4px 8px;outline:none;text-align:right;}
+.ref-inp:focus{border-color:var(--acc);}
+.ref-unit{font-size:10px;color:var(--mu);width:30px;}
+
+/* ══ EXPORT MODAL ══ */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(9,9,12,.85);z-index:200;align-items:center;justify-content:center;}
+.modal-ov.open{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rxl);padding:22px;width:360px;max-width:92vw;}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:14px;}
+.exp-opt{background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--r);padding:11px 13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:11px;margin-bottom:7px;}
+.exp-opt:hover{border-color:var(--b2);background:var(--s3);}
+.exp-icon{font-size:18px;flex-shrink:0;}
+.exp-t{font-size:12px;font-weight:600;}
+.exp-s{font-size:10px;color:var(--mu2);margin-top:1px;}
+
+/* ══ LOADING ══ */
+#lov{display:none;position:fixed;inset:0;background:rgba(9,9,12,.9);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+#lov.vis{display:flex;}
+.spin{width:34px;height:34px;border:2px solid var(--b2);border-top-color:var(--acc);border-radius:50%;animation:spin .65s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#ltxt{font-size:12px;font-weight:600;color:var(--mu2);}
+
+/* ══ TOAST ══ */
+#toast{position:fixed;bottom:18px;right:18px;background:var(--s3);border:1px solid var(--b2);border-radius:var(--r);padding:10px 15px;font-size:11px;font-weight:600;z-index:600;transform:translateY(60px);opacity:0;transition:all .3s;max-width:300px;}
+#toast.sh{transform:translateY(0);opacity:1;}
+#toast.ok{border-left:3px solid var(--gr);}
+#toast.er{border-left:3px solid var(--re);}
+#toast.nf{border-left:3px solid var(--bl);}
+
+/* ══ DUP ALERT ══ */
+.dup-alert{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--re);}
+
+/* ══ MISC ══ */
+.tag{background:var(--s3);border:1px solid var(--b1);border-radius:4px;padding:2px 8px;font-size:9px;color:var(--mu2);}
+.notes-area{width:100%;background:var(--s1);border:1.5px solid var(--b1);border-radius:var(--r);color:var(--tx);font-family:'DM Mono',monospace;font-size:10px;padding:10px;resize:vertical;min-height:72px;outline:none;transition:border-color .2s;line-height:1.6;}
+.notes-area:focus{border-color:var(--acc);}
+.p10{padding:10px 14px;}
+.p12{padding:12px 14px;}
+.mb8{margin-bottom:8px;}
+.mb12{margin-bottom:12px;}
+.mb16{margin-bottom:16px;}
+.gap6{gap:6px;}
+.flex{display:flex;}
+.fc-col{flex-direction:column;}
+.aic{align-items:center;}
+.jsb{justify-content:space-between;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<div id="hdr">
+  <div class="logo">PIGE NC</div>
+  <div>
+    <div class="hdr-name">Pige Locative Nouméa</div>
+    <div class="hdr-sub">Prospection PAP → Mandats agence</div>
+  </div>
+  <div class="hdr-stats">
+    <div class="sc"><div class="sc-n" id="s-tot">0</div><div class="sc-l">Total</div></div>
+    <div class="sc"><div class="sc-n" id="s-new">0</div><div class="sc-l">À appeler</div></div>
+    <div class="sc c-bl"><div class="sc-n" id="s-cal">0</div><div class="sc-l">Appelés</div></div>
+    <div class="sc c-gr"><div class="sc-n" id="s-int">0</div><div class="sc-l">Intéressés</div></div>
+    <div class="sc c-pu"><div class="sc-n" id="s-man">0</div><div class="sc-l">Mandats</div></div>
+    <div class="sc c-or"><div class="sc-n" id="s-rl">0</div><div class="sc-l">Relances</div></div>
+  </div>
+  <div class="hdr-btns">
+    <button class="btn btn-pu btn-sm" onclick="openQCM()">⚡ Mode appels</button>
+    <button class="btn btn-g btn-sm" onclick="openExport()">⬇ Export</button>
+    <button class="btn btn-re btn-sm" onclick="clearAll()">🗑</button>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div id="app">
+
+  <!-- ── SIDEBAR ── -->
+  <div id="sb">
+    <div class="tabs">
+      <button class="tab on" onclick="swTab('saisie',this)">＋ Saisie</button>
+      <button class="tab" onclick="swTab('liste',this)">📋 Liste</button>
+      <button class="tab" onclick="swTab('pipeline',this)">🔀 Pipeline</button>
+      <button class="tab" onclick="swTab('analytics',this)">📊 Stats</button>
+      <button class="tab" onclick="swTab('prix',this)">💰 Prix</button>
+    </div>
+
+    <!-- TAB SAISIE -->
+    <div class="tc on" id="tc-saisie">
+      <div class="p12" style="border-bottom:1px solid var(--b1);display:flex;flex-direction:column;gap:9px;">
+        <div class="st mb8">Coller annonces PAP</div>
+        <textarea class="inp" id="paste-in" style="min-height:120px;" placeholder="Colle une ou plusieurs annonces ici...&#10;&#10;Sépare avec : ---&#10;&#10;Ex : F3 meublé Vallée-du-Tir 70m² 120 000 XPF CC. Jean-Pierre 76.12.34&#10;---&#10;Studio Orphelinat 28m² 65 000 XPF Marie 98.45.67"></textarea>
+        <div style="font-size:9px;color:var(--mu);line-height:1.5;">💡 Sépare plusieurs annonces avec <strong style="color:var(--mu2);">---</strong> pour traitement en lot</div>
+        <div id="dup-warn-zone"></div>
+        <button class="btn btn-acc" id="ext-btn" onclick="extractAll()">⚡ Analyser et créer les fiches</button>
+      </div>
+      <div class="p10" style="flex:1;overflow-y:auto;">
+        <div class="st mb8">Récemment ajoutées</div>
+        <div id="recent-list"></div>
+      </div>
+    </div>
+
+    <!-- TAB LISTE -->
+    <div class="tc" id="tc-liste">
+      <div class="p10" style="border-bottom:1px solid var(--b1);display:flex;flex-direction:column;gap:8px;">
+        <input class="inp" id="search" placeholder="🔍  Quartier, contact, téléphone..." oninput="renderList()">
+        <div class="pills" id="fp-type">
+          <button class="pill on" data-f="all" onclick="setTF('all',this)">Tous</button>
+          <button class="pill" data-f="studio" onclick="setTF('studio',this)">Studio</button>
+          <button class="pill" data-f="f2" onclick="setTF('f2',this)">F2</button>
+          <button class="pill" data-f="f3" onclick="setTF('f3',this)">F3</button>
+          <button class="pill" data-f="f4" onclick="setTF('f4',this)">F4+</button>
+          <button class="pill" data-f="maison" onclick="setTF('maison',this)">Maison</button>
+          <button class="pill" data-f="villa" onclick="setTF('villa',this)">Villa</button>
+        </div>
+        <div class="pills" id="fp-status">
+          <button class="pill on" data-fs="all" onclick="setSF('all',this)">Tous</button>
+          <button class="pill" data-fs="new" onclick="setSF('new',this)">À appeler</button>
+          <button class="pill" data-fs="called" onclick="setSF('called',this)">Appelé</button>
+          <button class="pill" data-fs="interested" onclick="setSF('interested',this)">Intéressé</button>
+          <button class="pill" data-fs="mandate" onclick="setSF('mandate',this)">Mandat ✓</button>
+          <button class="pill" data-fs="refused" onclick="setSF('refused',this)">Refus</button>
+        </div>
+        <div class="flex aic gap6">
+          <span style="font-size:9px;color:var(--mu);flex-shrink:0;">Trier</span>
+          <select class="inp" id="sort-sel" onchange="renderList()" style="font-size:10px;padding:4px 8px;">
+            <option value="date_desc">Date ↓ récent</option>
+            <option value="date_asc">Date ↑ ancien</option>
+            <option value="loyer_desc">Loyer ↓</option>
+            <option value="loyer_asc">Loyer ↑</option>
+            <option value="score_desc">Score ↓</option>
+            <option value="relance">Relance imminente</option>
+            <option value="mkt_opp">Opportunité marché</option>
+          </select>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:7px;" id="fiches-list"></div>
+    </div>
+
+    <!-- TAB PIPELINE -->
+    <div class="tc" id="tc-pipeline">
+      <div class="pipe-wrap" id="pipe-wrap"></div>
+    </div>
+
+    <!-- TAB ANALYTICS -->
+    <div class="tc" id="tc-analytics">
+      <div class="ana-wrap" id="ana-wrap"></div>
+    </div>
+
+    <!-- TAB PRIX REF -->
+    <div class="tc" id="tc-prix">
+      <div class="p12" style="flex:1;overflow-y:auto;">
+        <div class="st mb8">Prix de référence marché NC (XPF/mois)</div>
+        <div style="font-size:9px;color:var(--mu);margin-bottom:12px;line-height:1.5;">Ajuste ces valeurs pour calibrer le scoring marché selon ta connaissance du terrain.</div>
+        <div id="prix-ref-grid"></div>
+        <button class="btn btn-acc btn-sm" onclick="savePrixRef()" style="margin-top:12px;">💾 Sauvegarder les prix</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PANEL DROIT ── -->
+  <div id="pr">
+    <div id="es" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--mu);text-align:center;padding:40px;">
+      <div style="font-size:38px;opacity:.2;">👈</div>
+      <div style="font-size:16px;font-weight:700;color:var(--mu2);">Sélectionne une fiche</div>
+      <div style="font-size:11px;max-width:280px;line-height:1.6;">Clique sur une annonce pour voir le détail complet, le scoring marché, générer le script d'appel, planifier une relance et suivre l'historique.</div>
+    </div>
+    <div id="dv" style="display:none;flex:1;overflow-y:auto;padding:20px;"></div>
+  </div>
+</div>
+
+<!-- ══════════════ QUICK CALL MODE ══════════════ -->
+<div id="qcm">
+  <div class="qcm-hdr">
+    <div>
+      <div style="font-size:14px;font-weight:800;">⚡ Mode Appels en Chaîne</div>
+      <div class="qcm-prog" id="qcm-prog">Chargement...</div>
+    </div>
+    <div class="flex gap6">
+      <button class="btn btn-g btn-sm" onclick="qcmPrev()">← Précédent</button>
+      <button class="btn btn-g btn-sm" onclick="qcmNext()">Suivant →</button>
+      <button class="btn btn-re btn-sm" onclick="closeQCM()">✕ Quitter</button>
+    </div>
+  </div>
+  <div class="qcm-body">
+    <div class="qcm-main" id="qcm-main"></div>
+    <div class="qcm-side" id="qcm-side">
+      <div>
+        <div class="qcm-side-title">Script d'appel</div>
+        <div id="qcm-script"></div>
+      </div>
+      <div>
+        <div class="qcm-side-title">Notes rapides</div>
+        <textarea class="notes-area" id="qcm-notes" placeholder="Notes pendant l'appel..."></textarea>
+        <button class="btn btn-g btn-sm" onclick="qcmSaveNotes()" style="margin-top:6px;">💾 Sauvegarder</button>
+      </div>
+      <div class="qcm-kbd">
+        <span class="kbd">1</span> Répondu &nbsp;
+        <span class="kbd">2</span> Pas répondu &nbsp;
+        <span class="kbd">3</span> Intéressé<br style="margin-top:4px;">
+        <span class="kbd">4</span> Refus &nbsp;
+        <span class="kbd">→</span> Suivant &nbsp;
+        <span class="kbd">←</span> Précédent
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ EXPORT MODAL ══════════════ -->
+<div class="modal-ov" id="exp-modal" onclick="closeExpIfOut(event)">
+  <div class="modal">
+    <div class="flex jsb aic mb12">
+      <div class="modal-title">Exporter / Importer</div>
+      <button class="btn btn-g btn-xs" onclick="closeExp()">✕</button>
+    </div>
+    <div class="exp-opt" onclick="expCSV()"><div class="exp-icon">📊</div><div><div class="exp-t">Export CSV / Excel</div><div class="exp-s">Tableau complet — ouvrable dans Excel</div></div></div>
+    <div class="exp-opt" onclick="expJSON()"><div class="exp-icon">💾</div><div><div class="exp-t">Sauvegarde JSON</div><div class="exp-s">Backup complet — reimportable</div></div></div>
+    <div class="exp-opt" onclick="impJSON()"><div class="exp-icon">📥</div><div><div class="exp-t">Importer JSON</div><div class="exp-s">Restaurer une sauvegarde</div></div></div>
+    <div class="exp-opt" onclick="expAppeler()"><div class="exp-icon">📞</div><div><div class="exp-t">Liste "À appeler"</div><div class="exp-s">Feuille de route — numéros du jour</div></div></div>
+    <div class="exp-opt" onclick="expRapport()"><div class="exp-icon">📄</div><div><div class="exp-t">Rapport hebdo</div><div class="exp-s">Résumé d'activité de la semaine</div></div></div>
+    <button class="btn btn-g btn-sm" onclick="closeExp()" style="width:100%;justify-content:center;margin-top:6px;">Fermer</button>
+  </div>
+</div>
+<input type="file" id="imp-file" accept=".json" style="display:none" onchange="handleImp(event)">
+
+<!-- LOADING -->
+<div id="lov"><div class="spin"></div><div id="ltxt">Analyse en cours...</div></div>
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// DONNÉES PRIX DE RÉFÉRENCE NC (XPF/mois)
+// ════════════════════════════════════════════════════════
+const DEFAULT_PRIX_REF = {
+  "Anse-Vata":       {studio:75000,f2:112000,f3:158000,f4:210000,maison:240000,villa:290000},
+  "Baie des Citrons":{studio:70000,f2:106000,f3:150000,f4:198000,maison:225000,villa:275000},
+  "Ouen Toro":       {studio:80000,f2:122000,f3:168000,f4:225000,maison:260000,villa:320000},
+  "Orphelinat":      {studio:60000,f2:90000, f3:130000,f4:172000,maison:195000,villa:240000},
+  "Vallée-du-Tir":   {studio:55000,f2:84000, f3:120000,f4:160000,maison:182000,villa:225000},
+  "Normandie":       {studio:58000,f2:88000, f3:126000,f4:168000,maison:190000,villa:235000},
+  "Magenta":         {studio:62000,f2:95000, f3:136000,f4:180000,maison:205000,villa:252000},
+  "Receiving":       {studio:52000,f2:78000, f3:112000,f4:148000,maison:170000,villa:210000},
+  "Motor Pool":      {studio:57000,f2:84000, f3:120000,f4:160000,maison:182000,villa:225000},
+  "Faubourg Blanchot":{studio:58000,f2:86000,f3:122000,f4:162000,maison:184000,villa:228000},
+  "Rivière-Salée":   {studio:50000,f2:74000, f3:108000,f4:142000,maison:162000,villa:200000},
+  "Robinson":        {studio:54000,f2:80000, f3:116000,f4:154000,maison:176000,villa:218000},
+  "Ducos":           {studio:52000,f2:76000, f3:110000,f4:146000,maison:166000,villa:206000},
+  "Doniambo":        {studio:55000,f2:82000, f3:118000,f4:156000,maison:178000,villa:220000},
+  "Dumbéa-sur-Mer":  {studio:65000,f2:96000, f3:138000,f4:184000,maison:210000,villa:260000},
+  "Koutio":          {studio:60000,f2:90000, f3:128000,f4:170000,maison:194000,villa:238000},
+  "Ouémo":           {studio:56000,f2:82000, f3:118000,f4:156000,maison:178000,villa:220000},
+  "Sainte-Marie":    {studio:58000,f2:86000, f3:124000,f4:164000,maison:186000,villa:230000},
+};
+
+let PRIX_REF = JSON.parse(localStorage.getItem('pige_prix_ref') || JSON.stringify(DEFAULT_PRIX_REF));
+
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let fiches = JSON.parse(localStorage.getItem('pige_v3') || '[]');
+let selId = null;
+let tFilter = 'all', sFilter = 'all';
+let qcmList = [], qcmIdx = 0;
+
+// ════════════════════════════════════════════════════════
+// LOADING / TOAST / UTILS UI
+// ════════════════════════════════════════════════════════
+function showLoad(txt) {
+  document.getElementById('ltxt').textContent = txt||'Chargement...';
+  document.getElementById('lov').classList.add('vis');
+}
+function hideLoad() {
+  document.getElementById('lov').classList.remove('vis');
+}
+let _toastTimer = null;
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'sh ' + (type||'');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>{ t.className = ''; }, 3000);
+}
+
+// ════════════════════════════════════════════════════════
+// API
+// ════════════════════════════════════════════════════════
+async function api(prompt) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'anthropic-dangerous-direct-browser-calls':'true'
+    },
+    body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+  });
+  const d = await r.json();
+  if (d.error) throw new Error(d.error.message);
+  return d.content?.[0]?.text || '';
+}
+
+
+// ════════════════════════════════════════════════════════
+// DICTIONNAIRE QUARTIERS NC (copié du CRM Nesta)
+// ════════════════════════════════════════════════════════
+const QDB_PIGE = {
+  "Nouméa":["Aérodrome","Anse Vata","Artillerie","Baie des Citrons","Centre-Ville","Ducos","Faubourg Blanchot","Haut-Magenta","Kaméré","Logicoop","Magenta","Montravel","Motor Pool","Normandie","Nouville","Orphelinat","Ouémo","PK4","PK5","PK6","Receiving","Rivière-Salée","Sainte-Marie","Tina","Tindu","Trianon","Tuband","Val Plaisance","Vallée du Tir","Vallée des Colons"],
+  "Dumbéa":["Auteuil","Dumbéa Centre","Dumbéa-sur-Mer","Katiramona","Koé","Koutio","Panda","Yahoué","ZAC Panda"],
+  "Mont-Dore":["Boulari","La Coulée","Mont-Dore Sud","Plum","Robinson","Saint-Louis","Saint-Michel","Vallon-Dore"],
+  "Paita":["Gadji","La Tamoa","Nassandou","Nondoué","Savannah"],
+};
+const VILLES_PIGE = Object.keys(QDB_PIGE);
+const ALL_Q_FLAT = Object.values(QDB_PIGE).flat();
+
+function normTxtP(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g," ").replace(/\s+/g," ").trim();}
+
+function normPhoneP(s){
+  if(!s)return"";
+  let p=String(s).replace(/[\s.\-]/g,"");
+  if(p.startsWith("+687"))p=p.slice(4);
+  else if(p.startsWith("00687"))p=p.slice(5);
+  if(/^0[67]\d{8}$/.test(p))return p.match(/.{1,2}/g).join(" ");
+  if(/^\d{6}$/.test(p))return p.match(/.{1,2}/g).join(" ");
+  if(/^\d{8}$/.test(p))return p.match(/.{1,2}/g).join(" ");
+  return s.trim();
+}
+
+function extractFromText(texte) {
+  const t = texte;
+  const tl = t.toLowerCase();
+  const f = {};
+
+  // Type de bien
+  const piecesSet = new Set();
+  [...t.matchAll(/\b[FT](\d)\b/gi)].forEach(m => piecesSet.add("F"+m[1]));
+  if(/\bstudio\b/i.test(t)) piecesSet.add("F1");
+  const numPi = t.match(/(\d)\s*pièces?/i); if(numPi) piecesSet.add("F"+numPi[1]);
+  if(piecesSet.size) f.type_bien = [...piecesSet][0];
+  else if(/\bvilla\b/i.test(t)) f.type_bien = "Villa";
+  else if(/\bmaison\b/i.test(t)) f.type_bien = "Maison";
+  else if(/appart/i.test(t)) f.type_bien = "Appartement";
+
+  // Surface
+  const surAll = [];
+  const surExcl = [];
+  [...t.matchAll(/(?:terrasse|balcon)(?:[^.]{0,40}?)(\d+[,.]?\d*)\s*m[²2]/gi)].forEach(m=>surExcl.push(parseFloat(m[1].replace(",","."))));
+  [...t.matchAll(/(\d+[,.]?\d*)\s*m[²2]/gi)].forEach(m=>{
+    const v=parseFloat(m[1].replace(",","."));
+    if(v>=15&&v<=2000&&!surExcl.includes(v))surAll.push(v);
+  });
+  if(surAll.length) f.surface = Math.max(...surAll);
+
+  // Étage
+  if(/rez[- ]de[- ]chaussée|\brdc\b/i.test(t)) f.etage = "RDC";
+  else {
+    const etM = t.match(/(\d+)(?:er|ème|eme|e|éme)\s*étage/i);
+    if(etM) f.etage = etM[1];
+  }
+
+  // Loyer
+  const loyM = t.match(/(?:loyer|LOYER)[^:]*:?\s*([\d][\d\s.]*)\s*(?:XPF|CFP|FCFP|F\b)/i) ||
+               t.match(/([1-9]\d{1,2}[\s.]\d{3})\s*(?:XPF|CFP|FCFP|F\b)/i) ||
+               t.match(/([1-9]\d{4,6})\s*(?:XPF|CFP|FCFP)/i);
+  if(loyM){ const v=loyM[1].replace(/[\s.]/g,"").replace(/\D/g,""); if(v&&parseInt(v)>10000&&parseInt(v)<2000000) f.loyer=parseInt(v); }
+
+  // Charges CC/HC
+  if(/charges\s*comprises?|\bcc\b/i.test(t)) f.charges = "CC";
+  else if(/hors\s*charges?|\bhc\b/i.test(t)) f.charges = "HC";
+
+  // Meublé
+  f.meuble = /meublé|meuble/i.test(t) && !/non\s*meublé|pas\s*meublé/i.test(t);
+
+  // Parking
+  f.parking = /\bparking\b|\bgarage\b|place\s*de\s*parking/i.test(t);
+
+  // Téléphone NC
+  const telPatterns = [
+    /(?:^|[^\d])(\+687[\s.\-]?\d{2}[\s.\-]?\d{2}[\s.\-]?\d{2}(?:[\s.\-]?\d{2})?)/i,
+    /(?:^|[^\d\/])(\d{2}[\s.]\d{2}[\s.]\d{2}(?:[\s.]\d{2})?)(?!\d)/,
+    /(?:^|[^\d\/])(\d{8})(?!\d)/,
+    /(?:^|[^\d\/])(\d{6})(?!\d)/
+  ];
+  for(const pat of telPatterns){ const m=t.match(pat); if(m){f.contact_tel=normPhoneP(m[1]);break;} }
+
+  // Nom contact
+  const nmM = t.match(/(?:appeler?|contacter?|tél[:.\s]+|contact[:.\s]+)([A-ZÀ-Ö][a-zà-ö]+(?:\s+[A-ZÀ-Ö][a-zà-ö]+)?)/);
+  if(nmM) f.contact_nom = nmM[1];
+  else {
+    const nmM2 = t.match(/^([A-ZÀ-Ö][a-zà-ö]+(?:\s+[A-ZÀ-Ö][a-zà-ö]+)?)\s*[:\-]/m);
+    if(nmM2) f.contact_nom = nmM2[1];
+  }
+
+  // Quartier NC
+  for(const [ville, qs] of Object.entries(QDB_PIGE)){
+    for(const q of qs){
+      if(new RegExp("\\b"+q.replace(/[-]/g,"\\-")+"\\b","i").test(t)){
+        f.quartier = q;
+        if(!f.ville) f.ville = ville;
+        break;
+      }
+    }
+    if(f.quartier) break;
+  }
+  // Ville si pas de quartier
+  if(!f.ville){
+    const v = VILLES_PIGE.find(v=>new RegExp("\\b"+v.replace(/[-]/g,"\\-")+"\\b","i").test(t));
+    if(v) f.ville = v;
+  }
+
+  // Score d'intérêt basique
+  let score = 3;
+  if(f.loyer && f.contact_tel) score = 4;
+  if(f.loyer && f.contact_tel && f.quartier) score = 5;
+  if(!f.loyer || !f.contact_tel) score = 2;
+  f.score_interet = score;
+
+  // Résumé
+  const parts = [];
+  if(f.type_bien) parts.push(f.type_bien);
+  if(f.surface) parts.push(f.surface+"m²");
+  if(f.quartier) parts.push(f.quartier);
+  if(f.loyer) parts.push(fmtXPF(f.loyer));
+  f.resume = parts.join(" — ") || "Bien locatif NC";
+
+  // Points clés
+  const pts = [];
+  if(f.meuble) pts.push("Meublé");
+  if(f.parking) pts.push("Parking");
+  if(f.etage) pts.push("Étage "+f.etage);
+  if(f.charges) pts.push("Charges "+f.charges);
+  if(/piscine/i.test(t)) pts.push("Piscine");
+  if(/vue\s*mer/i.test(t)) pts.push("Vue mer");
+  if(/climati/i.test(t)) pts.push("Climatisation");
+  if(/terrasse/i.test(t)) pts.push("Terrasse");
+  f.points_cles = pts.slice(0,4);
+
+  f.source = /facebook|fb|marketplace/i.test(t) ? "Facebook" :
+             /olx/i.test(t) ? "OLX" :
+             /whatsapp|wha/i.test(t) ? "WhatsApp" : "Inconnu";
+
+  return f;
+}
+
+// ════════════════════════════════════════════════════════
+// EXTRACTION (REGEX — sans IA)
+// ════════════════════════════════════════════════════════
+async function extractAll() {
+  const raw = document.getElementById("paste-input").value.trim();
+  if (!raw) { toast("Colle une annonce d'abord !", "er"); return; }
+
+  const blocs = raw.split(/\n---\n|\n---\s*$/).map(b => b.trim()).filter(b => b.length > 8);
+  if (!blocs.length) { toast("Aucune annonce détectée", "er"); return; }
+
+  document.getElementById("extract-btn").disabled = true;
+  let created = 0;
+
+  for (const bloc of blocs) {
+    try {
+      const d = extractFromText(bloc);
+      const fiche = {
+        id:             Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        type_bien:      d.type_bien || "Autre",
+        surface:        d.surface || null,
+        nb_pieces:      null,
+        quartier:       d.quartier || d.ville || null,
+        loyer:          d.loyer || null,
+        charges:        d.charges || null,
+        meuble:         d.meuble || false,
+        parking:        d.parking || false,
+        etage:          d.etage || null,
+        contact_nom:    d.contact_nom || null,
+        contact_tel:    d.contact_tel || null,
+        points_cles:    d.points_cles || [],
+        resume:         d.resume || "",
+        score_interet:  d.score_interet || 3,
+        source:         d.source || "Inconnu",
+        texte_original: bloc,
+        statut:         "new",
+        notes:          "",
+        date_ajout:     new Date().toISOString(),
+        date_relance:   null,
+        script:         null,
+        sms_template:   null,
+        call_log:       [],
+      };
+      fiches.unshift(fiche);
+      created++;
+    } catch(e) {
+      console.error(e);
+      toast("Erreur annonce : " + e.message, "er");
+    }
+  }
+
+  if (created > 0) {
+    save();
+    renderAll();
+    document.getElementById("paste-input").value = "";
+    toast(created + " fiche" + (created > 1 ? "s" : "") + " créée" + (created > 1 ? "s" : "") + " ✓", "ok");
+    goView("liste", document.querySelector(".nav-item[onclick*=\"liste\"]"));
+    if (fiches.length > 0) selFiche(fiches[0].id);
+  } else {
+    toast("Aucune fiche créée — vérifie le texte", "er");
+  }
+
+  document.getElementById("extract-btn").disabled = false;
+}
+
+// ════════════════════════════════════════════════════════
+// SCORING MARCHÉ
+// ════════════════════════════════════════════════════════
+function computeMarketScore(fiche) {
+  if (!fiche.loyer || !fiche.quartier) return null;
+  const q = Object.keys(PRIX_REF).find(k => fiche.quartier.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(fiche.quartier.toLowerCase()));
+  if (!q) return null;
+  const ref = PRIX_REF[q];
+  const t = (fiche.type_bien||'').toLowerCase();
+  let refPrice = null;
+  if (t.includes('studio')||t.includes('f1')||t.includes('t1')) refPrice = ref.studio;
+  else if (t.includes('f2')||t.includes('t2')) refPrice = ref.f2;
+  else if (t.includes('f3')||t.includes('t3')) refPrice = ref.f3;
+  else if (t.includes('f4')||t.includes('t4')||t.includes('f5')||t.includes('t5')) refPrice = ref.f4;
+  else if (t.includes('maison')) refPrice = ref.maison;
+  else if (t.includes('villa')) refPrice = ref.villa;
+  if (!refPrice) return null;
+  const ecart = Math.round(((fiche.loyer - refPrice) / refPrice) * 100);
+  return { refPrice, ecart, quartier: q };
+}
+
+function mktLabel(score) {
+  if (!score) return {cls:'mkt-unknown',icon:'❓',title:'Marché inconnu',color:'var(--mu)'};
+  if (score.ecart <= -10) return {cls:'mkt-good',icon:'🟢',title:`${Math.abs(score.ecart)}% sous le marché — facile à louer`,color:'var(--gr)'};
+  if (score.ecart <= 5) return {cls:'mkt-good',icon:'✅',title:`Dans les prix du marché (${score.ecart>0?'+':''}${score.ecart}%)`,color:'var(--gr)'};
+  if (score.ecart <= 20) return {cls:'mkt-fair',icon:'🟡',title:`${score.ecart}% au-dessus du marché — argument négociation`,color:'var(--or)'};
+  return {cls:'mkt-high',icon:'🔴',title:`${score.ecart}% trop cher — difficile à louer`,color:'var(--re)'};
+}
+
+// ════════════════════════════════════════════════════════
+// DÉTECTION DOUBLONS
+// ════════════════════════════════════════════════════════
+function detectDups(texte) {
+  const tels = texte.match(/\d[\d\s.]{7,}/g)?.map(t=>t.replace(/\D/g,'')) || [];
+  return fiches.filter(f => f.contact_tel && tels.some(t => t.includes(f.contact_tel.replace(/\D/g,'')) || f.contact_tel.replace(/\D/g,'').includes(t)));
+}
+
+document.getElementById('paste-in').addEventListener('input', function() {
+  const dups = detectDups(this.value);
+  const z = document.getElementById('dup-warn-zone');
+  if (dups.length) {
+    z.innerHTML = `<div class="dup-alert">⚠️ Doublon potentiel détecté — ${dups.map(d=>d.contact_nom||d.contact_tel).join(', ')} déjà dans la pige.</div>`;
+  } else { z.innerHTML = ''; }
+});
+
+// ════════════════════════════════════════════════════════
+// SCRIPT + SMS
+// ════════════════════════════════════════════════════════
+async function genScript(id) {
+  const f = getF(id); if (!f) return;
+  showLoad('Génération du script personnalisé...');
+  const ms = computeMarketScore(f);
+  const prompt = `Agent immobilier expert à Nouméa NC. Tu appelles un proprio PAP.
+
+Bien: ${f.type_bien} ${f.surface?f.surface+'m²':''}, ${f.quartier||'Nouméa'}, ${f.loyer?fmtXPF(f.loyer):'loyer ?'}${ms?` (${ms.ecart>0?'+':''}${ms.ecart}% vs marché)`:''}.
+Contact: ${f.contact_nom||'le propriétaire'}
+Points: ${(f.points_cles||[]).join(', ')}
+
+Script d'appel naturel, efficace, adapté culture NC. UNIQUEMENT JSON sans markdown:
+{"accroche":"phrase ouverture 15 mots","presentation":"agence 20 mots","valeur_selection":"argument sélection locataires sérieux NC","valeur_gestion":"argument tranquillité garanties loyers","valeur_marche":"${ms&&ms.ecart>10?'argument prix trop élevé → aide à trouver quand même':'argument visibilité et rapidité'}","objection_seul":"réponse proprio loue seul 25 mots","objection_frais":"réponse trop cher commission 25 mots","objection_dejaloue":"réponse déjà quelqu'un intéressé 20 mots","conclusion":"closing RDV visite 20 mots"}`;
+  try {
+    const raw = await api(prompt);
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const jsonStart = clean.indexOf('{');
+    const jsonEnd = clean.lastIndexOf('}');
+    f.script = JSON.parse(clean.slice(jsonStart, jsonEnd + 1));
+    save(); renderDetail(f);
+    toast('Script généré ✓','ok');
+  } catch(e) { toast('Erreur script','er'); console.error(e); }
+  hideLoad();
+}
+
+async function genSMS(id) {
+  const f = getF(id); if (!f) return;
+  showLoad('Génération template SMS...');
+  const prompt = `Agent immobilier Nouméa NC. Le proprio n'a pas répondu à l'appel.
+Bien: ${f.type_bien}, ${f.quartier||'Nouméa'}, ${f.loyer?fmtXPF(f.loyer):'?'}
+Génère un SMS de rappel court (max 160 car), naturel, professionnel, adapté NC. UNIQUEMENT le texte du SMS, rien d'autre.`;
+  try {
+    f.sms_template = (await api(prompt)).trim();
+    save(); renderDetail(f);
+    toast('Template SMS généré ✓','ok');
+  } catch(e) { toast('Erreur SMS','er'); }
+  hideLoad();
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER LIST
+// ════════════════════════════════════════════════════════
+function renderList() {
+  const el = document.getElementById('fiches-list');
+  const q = (document.getElementById('search')?.value||'').toLowerCase();
+  const sort = document.getElementById('sort-sel')?.value||'date_desc';
+  const today = new Date().toDateString();
+  let list = [...fiches];
+  if (tFilter!=='all') list = list.filter(f=>matchType(f.type_bien,tFilter));
+  if (sFilter!=='all') list = list.filter(f=>f.statut===sFilter);
+  if (q) list = list.filter(f=>[f.quartier,f.contact_nom,f.contact_tel,f.type_bien,f.resume,f.notes].join(' ').toLowerCase().includes(q));
+  list.sort((a,b)=>{
+    if (sort==='date_desc') return new Date(b.date_ajout)-new Date(a.date_ajout);
+    if (sort==='date_asc') return new Date(a.date_ajout)-new Date(b.date_ajout);
+    if (sort==='loyer_desc') return (b.loyer||0)-(a.loyer||0);
+    if (sort==='loyer_asc') return (a.loyer||0)-(b.loyer||0);
+    if (sort==='score_desc') return (b.score_interet||0)-(a.score_interet||0);
+    if (sort==='relance') { const ra=a.date_relance?new Date(a.date_relance):new Date('2099'); const rb=b.date_relance?new Date(b.date_relance):new Date('2099'); return ra-rb; }
+    if (sort==='mkt_opp') { const ma=computeMarketScore(a); const mb=computeMarketScore(b); return (ma?ma.ecart:999)-(mb?mb.ecart:999); }
+    return 0;
+  });
+  if (!list.length) { el.innerHTML=`<div style="text-align:center;padding:30px;color:var(--mu);font-size:11px;">${fiches.length?'Aucun résultat':'Aucune fiche. Utilise l\'onglet Saisie.'}</div>`; return; }
+  el.innerHTML = list.map(f => {
+    const isRl = f.date_relance && new Date(f.date_relance).toDateString()===today;
+    const ms = computeMarketScore(f);
+    const ml = ms ? mktLabel(ms) : null;
+    const age = Math.floor((Date.now()-new Date(f.date_ajout))/86400000);
+    const freshCls = age<2?'fresh-new':'fresh-old';
+    const freshTxt = age<1?'⚡ Nouveau':age<2?'1j':''+age+'j';
+    const mktHtml = ml && ms ? `<div class="fc-mkt" style="color:${ml.color}">${ml.icon} ${ms.ecart>0?'+':''}${ms.ecart}% vs marché</div>` : '';
+    return `<div class="fc ${f.id===selId?'sel':''} ${isRl?'rl':''}" onclick="selFiche('${f.id}')">
+      <button class="delbtn" onclick="event.stopPropagation();delF('${f.id}')">✕</button>
+      <div class="fc-r1">
+        <div class="fc-badges">
+          <div class="sdot sdot-${f.statut}"></div>
+          <span class="tbadge ${getTC(f.type_bien)}">${f.type_bien}</span>
+          <span class="fresh-badge ${freshCls}">${freshTxt}</span>
+          ${f.script?'<span style="font-size:8px;color:var(--acc);">📞</span>':''}
+        </div>
+        <span class="fc-prix">${f.loyer?fmtXPF(f.loyer):'?'}</span>
+      </div>
+      <div class="fc-loc">${f.quartier||'Quartier ?'} · ${f.surface?f.surface+'m²':'?'} · ${new Date(f.date_ajout).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</div>
+      <div class="fc-contact">${esc(f.contact_nom||'Contact inconnu')}</div>
+      <div class="fc-tel">${f.contact_tel||'—'}</div>
+      ${mktHtml}
+      ${isRl?`<div class="fc-rl">🔔 Relance aujourd'hui</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderRecent() {
+  const el = document.getElementById('recent-list');
+  const list = fiches.slice(0,6);
+  if (!list.length) { el.innerHTML='<div style="font-size:10px;color:var(--mu)">Aucune fiche encore.</div>'; return; }
+  el.innerHTML = list.map(f=>`
+    <div class="fc" style="margin-bottom:5px;" onclick="selFiche('${f.id}');swTab('liste',document.querySelectorAll('.tab')[1])">
+      <div class="fc-r1">
+        <div class="fc-badges"><div class="sdot sdot-${f.statut}"></div><span class="tbadge ${getTC(f.type_bien)}">${f.type_bien}</span></div>
+        <span class="fc-prix">${f.loyer?fmtXPF(f.loyer):'?'}</span>
+      </div>
+      <div class="fc-loc">${f.quartier||'?'} · ${new Date(f.date_ajout).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+      <div class="fc-tel">${f.contact_tel||'—'}</div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// PIPELINE
+// ════════════════════════════════════════════════════════
+function renderPipeline() {
+  const cols = [{k:'new',l:'À appeler',c:'p-new'},{k:'called',l:'Appelé',c:'p-called'},{k:'interested',l:'Intéressé',c:'p-int'},{k:'mandate',l:'Mandat ✓',c:'p-man'},{k:'refused',l:'Refus',c:'p-ref'}];
+  document.getElementById('pipe-wrap').innerHTML = cols.map(col => {
+    const items = fiches.filter(f=>f.statut===col.k);
+    return `<div class="pipe-col">
+      <div class="pipe-hdr ${col.c}"><span>${col.l}</span><span>${items.length}</span></div>
+      ${items.length?items.map(f=>`<div class="pipe-card" onclick="selFiche('${f.id}');swTab('liste',document.querySelectorAll('.tab')[1])">
+        <div style="font-size:8px;color:var(--mu2);text-transform:uppercase;margin-bottom:3px;">${f.type_bien}${f.surface?' · '+f.surface+'m²':''}</div>
+        <div style="font-weight:600;font-size:11px;">${f.quartier||'Nouméa'}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--acc);">${f.loyer?fmtXPF(f.loyer):'?'}</div>
+        <div style="font-size:9px;color:var(--mu2);margin-top:3px;">${esc(f.contact_nom||'—')} · ${f.contact_tel||'—'}</div>
+      </div>`).join('') : `<div style="font-size:9px;color:var(--mu);padding:8px;text-align:center;">—</div>`}
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// ANALYTICS
+// ════════════════════════════════════════════════════════
+function renderAnalytics() {
+  const total = fiches.length;
+  const statuts = ['new','called','interested','mandate','refused'];
+  const counts = {};
+  statuts.forEach(s => counts[s] = fiches.filter(f=>f.statut===s).length);
+  const convRate = total ? Math.round((counts.mandate/total)*100) : 0;
+  const intRate = total ? Math.round(((counts.interested+counts.mandate)/Math.max(counts.called+counts.interested+counts.mandate+counts.refused,1))*100) : 0;
+
+  // Par quartier
+  const qMap = {};
+  fiches.forEach(f => {
+    const q = f.quartier||'Inconnu';
+    if (!qMap[q]) qMap[q] = {total:0,mandate:0,interested:0};
+    qMap[q].total++; if (f.statut==='mandate') qMap[q].mandate++; if (f.statut==='interested') qMap[q].interested++;
+  });
+  const qRows = Object.entries(qMap).sort((a,b)=>b[1].total-a[1].total).slice(0,8).map(([q,d])=>
+    `<tr><td>${q}</td><td>${d.total}</td><td class="mono">${d.mandate}</td><td style="color:var(--gr)">${d.total?Math.round((d.mandate/d.total)*100):0}%</td></tr>`
+  ).join('');
+
+  // Loyer moyen
+  const loyerData = fiches.filter(f=>f.loyer);
+  const moyLoyer = loyerData.length ? Math.round(loyerData.reduce((a,f)=>a+f.loyer,0)/loyerData.length) : 0;
+
+  // Relances cette semaine
+  const now = new Date(); const week = new Date(now); week.setDate(now.getDate()+7);
+  const relSemaine = fiches.filter(f=>f.date_relance&&new Date(f.date_relance)<=week&&new Date(f.date_relance)>=now).length;
+
+  document.getElementById('ana-wrap').innerHTML = `
+    <div style="margin-bottom:14px;"><div class="st mb8">Vue d'ensemble</div></div>
+    <div class="ana-grid">
+      <div class="ana-card"><div class="ana-val" style="color:var(--acc)">${total}</div><div class="ana-lbl">Annonces en pige</div></div>
+      <div class="ana-card"><div class="ana-val" style="color:var(--pu)">${counts.mandate}</div><div class="ana-lbl">Mandats signés</div><div class="conv-bar"><div class="conv-fill" style="width:${convRate}%"></div></div><div class="ana-sub">${convRate}% taux de conversion</div></div>
+      <div class="ana-card"><div class="ana-val" style="color:var(--gr)">${counts.interested}</div><div class="ana-lbl">Propriétaires intéressés</div><div class="ana-sub">${intRate}% taux d'intérêt appels</div></div>
+      <div class="ana-card"><div class="ana-val" style="color:var(--or)">${relSemaine}</div><div class="ana-lbl">Relances cette semaine</div></div>
+      <div class="ana-card"><div class="ana-val" style="color:var(--bl);font-size:18px;">${moyLoyer?fmtXPF(moyLoyer):'—'}</div><div class="ana-lbl">Loyer moyen en pige</div></div>
+      <div class="ana-card"><div class="ana-val" style="color:var(--te)">${counts.new}</div><div class="ana-lbl">À appeler</div></div>
+    </div>
+    <div class="st mb8" style="margin-top:8px;">Par quartier</div>
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
+      <table class="qk-table"><thead><tr><th>Quartier</th><th>Fiches</th><th>Mandats</th><th>Conv.</th></tr></thead>
+      <tbody>${qRows||'<tr><td colspan="4" style="color:var(--mu);text-align:center;">Aucune donnée</td></tr>'}</tbody></table>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// PRIX REF
+// ════════════════════════════════════════════════════════
+function renderPrixRef() {
+  const types = [{k:'studio',l:'Studio'},{k:'f2',l:'F2'},{k:'f3',l:'F3'},{k:'f4',l:'F4+'},{k:'maison',l:'Maison'},{k:'villa',l:'Villa'}];
+  document.getElementById('prix-ref-grid').innerHTML = `
+    <div class="ref-grid">
+      ${Object.entries(PRIX_REF).map(([q,vals])=>`
+        <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;margin-bottom:8px;color:var(--tx);">${q}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+            ${types.map(t=>`<div class="flex aic gap6">
+              <span style="font-size:9px;color:var(--mu2);width:40px;">${t.l}</span>
+              <input type="number" class="ref-inp" data-q="${q}" data-t="${t.k}" value="${vals[t.k]||''}" style="width:80px;">
+            </div>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function savePrixRef() {
+  document.querySelectorAll('.ref-inp').forEach(inp => {
+    const q = inp.dataset.q, t = inp.dataset.t;
+    if (PRIX_REF[q] && inp.value) PRIX_REF[q][t] = parseInt(inp.value);
+  });
+  localStorage.setItem('pige_prix_ref', JSON.stringify(PRIX_REF));
+  toast('Prix de référence sauvegardés ✓','ok');
+}
+
+// ════════════════════════════════════════════════════════
+// DETAIL
+// ════════════════════════════════════════════════════════
+function renderDetail(f) {
+  document.getElementById('es').style.display='none';
+  const dv = document.getElementById('dv');
+  dv.style.display='block';
+  const ms = computeMarketScore(f);
+  const ml = mktLabel(ms);
+  const stars = '★'.repeat(f.score_interet||3)+'☆'.repeat(5-(f.score_interet||3));
+  const statusMap = {new:{l:'À appeler',c:'on-new'},called:{l:'Appelé',c:'on-called'},interested:{l:'Intéressé',c:'on-interested'},mandate:{l:'Mandat signé',c:'on-mandate'},refused:{l:'Refus',c:'on-refused'}};
+  const rlVal = f.date_relance?f.date_relance.split('T')[0]:'';
+
+  // Market scoring HTML
+  const mktHtml = `<div class="mkt-box ${ml.cls}" style="margin-bottom:16px;">
+    <div class="mkt-icon">${ml.icon}</div>
+    <div class="mkt-info">
+      <div class="mkt-title" style="color:${ml.color}">${ml.title}</div>
+      ${ms?`<div class="mkt-sub">Référence ${ms.quartier} : ${fmtXPF(ms.refPrice)}/mois · Loyer annoncé : ${fmtXPF(f.loyer)}</div>`:'<div class="mkt-sub">Quartier ou loyer non détecté — impossible de comparer</div>'}
+      ${ms?`<div class="score-bar" style="margin-top:8px;"><div class="score-fill" style="width:${Math.min(Math.max(50+ms.ecart,5),100)}%;background:${ml.color};"></div></div>`:''}
+    </div>
+    ${ms?`<div class="mkt-score" style="color:${ml.color}">${ms.ecart>0?'+':''}${ms.ecart}%</div>`:''}
+  </div>`;
+
+  // Script HTML
+  const scriptHtml = f.script ? `
+    <div class="script-box">
+      <div class="ss"><div class="ss-lbl">🎯 Accroche</div><div class="ss-txt">"${f.script.accroche}"</div></div>
+      <div class="ss"><div class="ss-lbl">👋 Présentation</div><div class="ss-txt">"${f.script.presentation}"</div></div>
+      <div class="ss"><div class="ss-lbl">💎 Sélection locataires</div><div class="ss-txt">"${f.script.valeur_selection}"</div></div>
+      <div class="ss"><div class="ss-lbl">🛡 Tranquillité & garanties</div><div class="ss-txt">"${f.script.valeur_gestion}"</div></div>
+      <div class="ss"><div class="ss-lbl">📈 Argument marché</div><div class="ss-txt">"${f.script.valeur_marche}"</div></div>
+      <div class="ss ss-obj"><div class="ss-lbl">↩ Objection "louer seul"</div><div class="ss-txt">"${f.script.objection_seul}"</div></div>
+      <div class="ss ss-obj"><div class="ss-lbl">💸 Objection "trop cher"</div><div class="ss-txt">"${f.script.objection_frais}"</div></div>
+      <div class="ss ss-obj"><div class="ss-lbl">🤝 Objection "déjà intéressé"</div><div class="ss-txt">"${f.script.objection_dejaloue}"</div></div>
+      <div class="ss"><div class="ss-lbl">✅ Closing / RDV</div><div class="ss-txt">"${f.script.conclusion}"</div></div>
+    </div>
+    <div class="row mb16">
+      <button class="btn btn-g btn-sm" onclick="copyScript('${f.id}')">📋 Copier</button>
+      <button class="btn btn-g btn-sm" onclick="genScript('${f.id}')">🔄 Regénérer</button>
+    </div>` :
+    `<div class="row mb16"><button class="btn btn-g btn-sm" onclick="genScript('${f.id}')">⚡ Générer le script d'appel IA</button></div>`;
+
+  // SMS HTML
+  const smsHtml = f.sms_template ? `
+    <div class="sms-box">
+      <div class="st mb8">Template SMS / WhatsApp</div>
+      <div class="sms-txt">${esc(f.sms_template)}</div>
+      <div class="row">
+        <button class="btn btn-g btn-xs" onclick="copySMS('${f.id}')">📋 Copier le SMS</button>
+        <button class="btn btn-g btn-xs" onclick="genSMS('${f.id}')">🔄 Regénérer</button>
+      </div>
+    </div>` :
+    `<div class="row mb16"><button class="btn btn-g btn-sm" onclick="genSMS('${f.id}')">📱 Générer template SMS si pas de réponse</button></div>`;
+
+  // Log appels
+  const logHtml = f.call_log?.length ? `
+    <div class="log-box">
+      ${f.call_log.slice().reverse().map(e=>`<div class="log-entry">
+        <div class="log-time">${new Date(e.ts).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+        <div class="log-status" style="color:${statusColor(e.statut)}">${statusEmoji(e.statut)}</div>
+        <div class="log-note">${esc(e.note||e.statut)}</div>
+      </div>`).join('')}
+    </div>` : `<div style="font-size:10px;color:var(--mu);margin-bottom:16px;">Aucun appel enregistré.</div>`;
+
+  const tags = (f.points_cles||[]).map(p=>`<span class="tag">${p}</span>`).join('');
+
+  dv.innerHTML = `
+    <div class="dh">
+      <div>
+        <div class="dh-title">${f.type_bien} — ${f.quartier||'Nouméa'}</div>
+        <div class="dh-meta">${f.resume||''} &nbsp;·&nbsp; <span style="color:var(--or)">${stars}</span> &nbsp;·&nbsp; ${new Date(f.date_ajout).toLocaleDateString('fr-FR')} &nbsp;·&nbsp; ${f.source||'Source ?'}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="dh-prix">${f.loyer?fmtXPF(f.loyer):'?'}</div>
+        <div class="dh-charges">${f.charges||''}</div>
+      </div>
+    </div>
+
+    <div class="dgrid">
+      <div class="dbox"><div class="dbox-l">Surface</div><div class="dbox-v">${f.surface?f.surface+' m²':'—'}</div></div>
+      <div class="dbox"><div class="dbox-l">Pièces</div><div class="dbox-v">${f.nb_pieces||'—'}</div></div>
+      <div class="dbox"><div class="dbox-l">Étage</div><div class="dbox-v">${f.etage||'—'}</div></div>
+      <div class="dbox"><div class="dbox-l">Meublé</div><div class="dbox-v">${f.meuble?'✓ Oui':'✕ Non'}</div></div>
+      <div class="dbox"><div class="dbox-l">Parking</div><div class="dbox-v">${f.parking?'✓ Oui':'✕ Non'}</div></div>
+      <div class="dbox"><div class="dbox-l">Charges</div><div class="dbox-v">${f.charges||'—'}</div></div>
+      <div class="dbox"><div class="dbox-l">Contact</div><div class="dbox-v" style="font-size:12px;">${esc(f.contact_nom||'—')}</div></div>
+      <div class="dbox" style="grid-column:span 2"><div class="dbox-l">Téléphone</div><div class="dbox-v tel" style="display:flex;align-items:center;gap:8px;">${f.contact_tel||'—'}${f.contact_tel?`<button class="btn btn-g btn-xs" onclick="copyTel('${f.contact_tel}')">📋</button>`:''}</div></div>
+    </div>
+
+    ${tags?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px;">${tags}</div>`:''}
+
+    <div class="st mb8">Scoring marché NC</div>
+    ${mktHtml}
+
+    <div class="st mb8">Statut prospect</div>
+    <div class="ssel">
+      ${Object.entries(statusMap).map(([k,v])=>`<button class="sbtn ${f.statut===k?v.c:''}" onclick="updStatus('${f.id}','${k}')">${v.l}</button>`).join('')}
+    </div>
+
+    <div class="st mb8">Relance</div>
+    <div class="rl-box">
+      <span class="rl-lbl">📅 Date :</span>
+      <input type="date" class="rl-inp" id="rl-inp" value="${rlVal}" onchange="saveRl('${f.id}')">
+      ${f.date_relance?`<span class="rl-current">→ ${new Date(f.date_relance).toLocaleDateString('fr-FR')}</span><button class="btn btn-g btn-xs" onclick="clearRl('${f.id}')">✕</button>`:''}
+    </div>
+
+    <div class="st mb8">Script d'appel</div>
+    ${scriptHtml}
+
+    <div class="st mb8">SMS si pas de réponse</div>
+    ${smsHtml}
+
+    <div class="st mb8">Historique appels</div>
+    ${logHtml}
+    <div class="row mb16">
+      <button class="btn btn-gr btn-sm" onclick="logCall('${f.id}','called','Répondu')">📞 Répondu</button>
+      <button class="btn btn-or btn-sm" onclick="logCall('${f.id}','new','Pas répondu')">📵 Pas répondu</button>
+      <button class="btn btn-g btn-sm" onclick="openLogNote('${f.id}')">✏️ Note</button>
+    </div>
+
+    <div class="st mb8">Notes</div>
+    <textarea class="notes-area" id="notes-area" placeholder="Notes, infos supplémentaires, retours...">${f.notes||''}</textarea>
+    <div class="row mb16">
+      <button class="btn btn-g btn-sm" onclick="saveNotes('${f.id}')">💾 Sauvegarder notes</button>
+      <button class="btn btn-re btn-sm" onclick="delF('${f.id}')">🗑 Supprimer</button>
+    </div>
+
+    <div class="st mb8">Annonce originale</div>
+    <div class="ann-box"><div class="ann-txt">${esc(f.texte_original)}</div></div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// QUICK CALL MODE
+// ════════════════════════════════════════════════════════
+function openQCM() {
+  qcmList = fiches.filter(f=>f.statut==='new'||f.statut==='called');
+  if (!qcmList.length) { toast('Aucune fiche à appeler','nf'); return; }
+  qcmIdx = 0;
+  document.getElementById('qcm').classList.add('open');
+  renderQCM();
+}
+function closeQCM() { document.getElementById('qcm').classList.remove('open'); }
+function qcmNext() { if (qcmIdx<qcmList.length-1) { qcmIdx++; renderQCM(); } }
+function openQCM() {
+  qcmList = fiches.filter(f=>f.statut==='new'||f.statut==='called');
+  if (!qcmList.length) { toast('Aucune fiche à appeler','nf'); return; }
+  qcmIdx = 0;
+  document.getElementById('qcm').classList.add('open');
+  renderQCM();
+}
+function closeQCM() { document.getElementById('qcm').classList.remove('open'); }
+function qcmNext() { if (qcmIdx<qcmList.length-1) { qcmIdx++; renderQCM(); } }
+function qcmPrev() { if (qcmIdx>0) { qcmIdx--; renderQCM(); } }
+
+function renderQCM() {
+  const f = qcmList[qcmIdx];
+  document.getElementById('qcm-prog').innerHTML = `Fiche <strong>${qcmIdx+1}</strong> / ${qcmList.length} &nbsp;·&nbsp; ${qcmList.filter((x,i)=>i<qcmIdx&&x.statut==='called').length} appelés`;
+  document.getElementById('qcm-notes').value = f.notes||'';
+  document.getElementById('qcm-main').innerHTML = `
+    <div class="qcm-type">${f.type_bien} · ${f.quartier||'Nouméa'}</div>
+    <div class="qcm-bien">${f.surface?f.surface+' m²':'Surface ?'}</div>
+    <div class="qcm-loc">${f.quartier||'Nouméa'} · ${f.meuble?'Meublé':'Non meublé'} · ${f.parking?'Parking':'Sans parking'}</div>
+    <div class="qcm-prix">${f.loyer?fmtXPF(f.loyer):'Prix ?'}</div>
+    <div class="qcm-charges">${f.charges||''}</div>
+    <div class="qcm-contact">
+      <div class="qcm-name">${esc(f.contact_nom||'Contact inconnu')}</div>
+      <div class="qcm-tel" onclick="copyTel('${f.contact_tel}')" style="cursor:pointer;" title="Cliquer pour copier">${f.contact_tel||'—'}</div>
+    </div>
+    <div class="qcm-actions">
+      <button class="qcm-btn btn-gr" onclick="qcmAction('called','Répondu')">📞 Répondu <span style="font-size:10px;opacity:.7;">[1]</span></button>
+      <button class="qcm-btn btn-or" onclick="qcmAction('new','Pas répondu')" style="background:rgba(240,160,32,.12);color:var(--or);border:1px solid rgba(240,160,32,.25);">📵 Pas répondu <span style="font-size:10px;opacity:.7;">[2]</span></button>
+      <button class="qcm-btn btn-gr" onclick="qcmAction('interested','Intéressé')" style="background:rgba(139,92,246,.12);color:var(--pu);border:1px solid rgba(139,92,246,.25);">✅ Intéressé <span style="font-size:10px;opacity:.7;">[3]</span></button>
+      <button class="qcm-btn btn-re" onclick="qcmAction('refused','Refus')" style="background:rgba(239,68,68,.1);color:var(--re);border:1px solid rgba(239,68,68,.2);">❌ Refus <span style="font-size:10px;opacity:.7;">[4]</span></button>
+    </div>`;
+  const s = f.script;
+  document.getElementById('qcm-script').innerHTML = s ? `
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div><div class="ss-lbl">🎯 Accroche</div><div class="ss-txt">"${s.accroche}"</div></div>
+      <div><div class="ss-lbl">💎 Valeur</div><div class="ss-txt">"${s.valeur_selection}"</div></div>
+      <div><div class="ss-lbl">↩ Objection seul</div><div class="ss-txt ss-obj" style="color:var(--mu2);font-style:italic;font-size:10px;">"${s.objection_seul}"</div></div>
+      <div><div class="ss-lbl">✅ Closing</div><div class="ss-txt">"${s.conclusion}"</div></div>
+    </div>` :
+    `<div style="font-size:11px;color:var(--mu);">Pas de script généré.<br><button class="btn btn-g btn-sm" style="margin-top:8px;" onclick="genScript('${f.id}');closeQCM();">⚡ Générer</button></div>`;
+}
+
+function qcmAction(statut, note) {
+  const f = qcmList[qcmIdx];
+  logCall(f.id, statut, note);
+  qcmSaveNotes();
+  toast(note+' ✓','ok');
+  if (qcmIdx < qcmList.length-1) { setTimeout(()=>{ qcmIdx++; renderQCM(); }, 400); }
+  else { setTimeout(()=>{ closeQCM(); toast('Tous les appels terminés 🎉','ok'); }, 400); }
+}
+
+function qcmSaveNotes() {
+  const f = qcmList[qcmIdx];
+  const v = document.getElementById('qcm-notes')?.value;
+  if (f && v !== undefined) { f.notes = v; const rf = getF(f.id); if(rf) rf.notes=v; save(); }
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('qcm').classList.contains('open')) return;
+  if (e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT') return;
+  if (e.key==='1') qcmAction('called','Répondu');
+  else if (e.key==='2') qcmAction('new','Pas répondu');
+  else if (e.key==='3') qcmAction('interested','Intéressé');
+  else if (e.key==='4') qcmAction('refused','Refus');
+  else if (e.key==='ArrowRight') qcmNext();
+  else if (e.key==='ArrowLeft') qcmPrev();
+  else if (e.key==='Escape') closeQCM();
+});
+
+// ════════════════════════════════════════════════════════
+// ACTIONS
+// ════════════════════════════════════════════════════════
+function selFiche(id) {
+  selId = id;
+  renderList();
+  const f = getF(id);
+  if (f) renderDetail(f);
+}
+
+function updStatus(id, statut) {
+  const f = getF(id); if (!f) return;
+  f.statut = statut; save(); renderAll(); renderDetail(f);
+  toast('Statut mis à jour ✓','ok');
+}
+
+function logCall(id, statut, note) {
+  const f = getF(id); if (!f) return;
+  if (!f.call_log) f.call_log = [];
+  f.call_log.push({ ts: new Date().toISOString(), statut, note });
+  f.statut = statut; save(); renderAll();
+  if (selId===id) renderDetail(f);
+}
+
+function openLogNote(id) {
+  const note = prompt('Note d\'appel :');
+  if (note) logCall(id, getF(id)?.statut||'called', note);
+}
+
+function saveNotes(id) {
+  const f = getF(id); if (!f) return;
+  const el = document.getElementById('notes-area');
+  if (el) { f.notes = el.value; save(); toast('Notes sauvegardées ✓','ok'); }
+}
+
+function saveRl(id) {
+  const f = getF(id); if (!f) return;
+  const v = document.getElementById('rl-inp')?.value;
+  f.date_relance = v ? new Date(v).toISOString() : null;
+  save(); renderList(); renderDetail(f);
+  toast('Relance planifiée ✓','ok');
+}
+
+function clearRl(id) {
+  const f = getF(id); if (!f) return;
+  f.date_relance = null; save(); renderDetail(f); renderList();
+}
+
+function delF(id) {
+  if (!confirm('Supprimer cette fiche ?')) return;
+  fiches = fiches.filter(f=>f.id!==id);
+  if (selId===id) { selId=null; document.getElementById('es').style.display='flex'; document.getElementById('dv').style.display='none'; }
+  save(); renderAll(); toast('Fiche supprimée','');
+}
+
+function clearAll() {
+  if (!confirm(`Supprimer toutes les ${fiches.length} fiches ?`)) return;
+  fiches=[]; selId=null;
+  document.getElementById('es').style.display='flex';
+  document.getElementById('dv').style.display='none';
+  save(); renderAll();
+}
+
+function copyTel(tel) { navigator.clipboard.writeText(tel).then(()=>toast('Numéro copié ✓','ok')); }
+
+function copyScript(id) {
+  const f = getF(id); if (!f?.script) return;
+  const s = f.script;
+  const t = `SCRIPT APPEL — ${f.type_bien} ${f.quartier||''}\n\nACCROCHE: "${s.accroche}"\nPRÉSENTATION: "${s.presentation}"\nSÉLECTION LOCATAIRES: "${s.valeur_selection}"\nTRANQUILLITÉ: "${s.valeur_gestion}"\nARGUMENT MARCHÉ: "${s.valeur_marche}"\nOBJECTION "seul": "${s.objection_seul}"\nOBJECTION "frais": "${s.objection_frais}"\nOBJECTION "déjà loué": "${s.objection_dejaloue}"\nCLOSING: "${s.conclusion}"`;
+  navigator.clipboard.writeText(t).then(()=>toast('Script copié ✓','ok'));
+}
+
+function copySMS(id) {
+  const f = getF(id); if (!f?.sms_template) return;
+  navigator.clipboard.writeText(f.sms_template).then(()=>toast('SMS copié ✓','ok'));
+}
+
+// ════════════════════════════════════════════════════════
+// FILTRES / TABS
+// ════════════════════════════════════════════════════════
+function setTF(v,el) { tFilter=v; document.querySelectorAll('#fp-type .pill').forEach(p=>p.classList.remove('on')); el.classList.add('on'); renderList(); }
+function setSF(v,el) { sFilter=v; document.querySelectorAll('#fp-status .pill').forEach(p=>p.classList.remove('on')); el.classList.add('on'); renderList(); }
+
+function swTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('tc-'+name).classList.add('on');
+  if (name==='pipeline') renderPipeline();
+  if (name==='analytics') renderAnalytics();
+  if (name==='prix') renderPrixRef();
+  if (name==='saisie') renderRecent();
+}
+
+// ════════════════════════════════════════════════════════
+// EXPORT / IMPORT
+// ════════════════════════════════════════════════════════
+function openExport() { document.getElementById('exp-modal').classList.add('open'); }
+function closeExp() { document.getElementById('exp-modal').classList.remove('open'); }
+function closeExpIfOut(e) { if(e.target===document.getElementById('exp-modal')) closeExp(); }
+
+function expCSV() {
+  const cols = ['type_bien','quartier','surface','loyer','charges','meuble','parking','nb_pieces','etage','contact_nom','contact_tel','statut','score_interet','date_ajout','date_relance','source','notes','resume'];
+  const hdr = cols.join(';');
+  const rows = fiches.map(f=>cols.map(c=>{
+    const v=f[c]; if(v===null||v===undefined) return '';
+    if(typeof v==='boolean') return v?'Oui':'Non';
+    if(c==='date_ajout'||c==='date_relance') return v?new Date(v).toLocaleDateString('fr-FR'):'';
+    return String(v).replace(/;/g,',').replace(/\n/g,' ');
+  }).join(';'));
+  dl('\uFEFF'+[hdr,...rows].join('\n'),'pige_noumea_'+ds()+'.csv','text/csv');
+  closeExp(); toast('CSV téléchargé ✓','ok');
+}
+
+function expJSON() {
+  dl(JSON.stringify({fiches, prix_ref:PRIX_REF, exported_at:new Date().toISOString()},null,2),'pige_backup_'+ds()+'.json','application/json');
+  closeExp(); toast('Backup JSON téléchargé ✓','ok');
+}
+
+function impJSON() { closeExp(); document.getElementById('imp-file').click(); }
+
+function handleImp(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      const data = Array.isArray(d) ? d : (d.fiches||[]);
+      if (!data.length) throw new Error();
+      if (d.prix_ref) { PRIX_REF = d.prix_ref; localStorage.setItem('pige_prix_ref',JSON.stringify(PRIX_REF)); }
+      if (!confirm(`Importer ${data.length} fiches ?`)) return;
+      fiches = [...data,...fiches]; save(); renderAll(); toast(`${data.length} fiches importées ✓`,'ok');
+    } catch { toast('Fichier invalide','er'); }
+  };
+  r.readAsText(file); e.target.value='';
+}
+
+function expAppeler() {
+  const list = fiches.filter(f=>f.statut==='new');
+  if (!list.length) { toast('Aucune fiche à appeler','nf'); return; }
+  const txt = `LISTE À APPELER — ${new Date().toLocaleDateString('fr-FR')}\n${'═'.repeat(44)}\n\n`+
+    list.map((f,i)=>`${i+1}. ${f.type_bien} — ${f.quartier||'Nouméa'} — ${f.loyer?fmtXPF(f.loyer):'?'}\n   ${f.contact_nom||'?'} · ${f.contact_tel||'?'}\n   ${f.resume||''}`).join('\n\n');
+  dl(txt,'appeler_'+ds()+'.txt','text/plain'); closeExp(); toast('Liste téléchargée ✓','ok');
+}
+
+function expRapport() {
+  const now = new Date(); const week = new Date(now); week.setDate(now.getDate()-7);
+  const recents = fiches.filter(f=>new Date(f.date_ajout)>=week);
+  const totalCalls = fiches.reduce((a,f)=>a+(f.call_log?.length||0),0);
+  const conv = fiches.filter(f=>f.statut==='mandate').length;
+  const txt = `RAPPORT HEBDO PIGE LOCATIVE\n${new Date().toLocaleDateString('fr-FR')}\n${'═'.repeat(44)}\n\n`+
+    `Total fiches en pige : ${fiches.length}\nNouvelles cette semaine : ${recents.length}\nAppels passés (total) : ${totalCalls}\nMandats signés : ${conv}\nTaux de conversion : ${fiches.length?Math.round((conv/fiches.length)*100):0}%\n\n`+
+    `MANDATS SIGNÉS :\n${fiches.filter(f=>f.statut==='mandate').map(f=>`- ${f.type_bien} ${f.quartier||''} · ${f.contact_nom||''} · ${f.loyer?fmtXPF(f.loyer):''}`).join('\n')||'Aucun'}\n\n`+
+    `INTÉRESSÉS (à conclure) :\n${fiches.filter(f=>f.statut==='interested').map(f=>`- ${f.type_bien} ${f.quartier||''} · ${f.contact_nom||''} · ${f.contact_tel||''}`).join('\n')||'Aucun'}`;
+  dl(txt,'rapport_'+ds()+'.txt','text/plain'); closeExp(); toast('Rapport téléchargé ✓','ok');
+}
+
+function dl(c,f,t) { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([c],{type:t})); a.download=f; a.click(); }
+function ds() { return new Date().toISOString().slice(0,10).replace(/-/g,''); }
+
+// ════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════
+function getF(id) { return fiches.find(f=>f.id===id); }
+function save() { localStorage.setItem('pige_v3',JSON.stringify(fiches)); updStats(); }
+
+function fmtXPF(v) { const n=parseInt(String(v).replace(/\D/g,'')); return isNaN(n)?v+' XPF':n.toLocaleString('fr-FR')+' XPF'; }
+
+function matchType(type,filter) {
+  const t=(type||'').toLowerCase();
+  if (filter==='studio') return t.includes('studio')||t.includes('f1')||t.includes('t1');
+  if (filter==='f2') return t.includes('f2')||t.includes('t2');
+  if (filter==='f3') return t.includes('f3')||t.includes('t3');
+  if (filter==='f4') return t.includes('f4')||t.includes('t4')||t.includes('f5')||t.includes('t5');
+  if (filter==='maison') return t.includes('maison');
+  if (filter==='villa') return t.includes('villa');
+  return true;
+}
+
+function getTC(type) {
+  const t=(type||'').toLowerCase();
+  if (t.includes('studio')||t.includes('f1')||t.includes('t1')) return 'tb-studio';
+  if (t.includes('f2')||t.includes('t2')) return 'tb-f2';
+  if (t.includes('f3')||t.includes('t3')) return 'tb-f3';
+  if (t.includes('f4')||t.includes('t4')||t.includes('f5')||t.includes('t5')) return 'tb-f4';
+  if (t.includes('maison')) return 'tb-maison';
+  if (t.includes('villa')) return 'tb-villa';
+  return 'tb-autre';
+}
+
+function statusColor(s) { return {new:'var(--acc)',called:'var(--bl)',interested:'var(--gr)',mandate:'var(--pu)',refused:'var(--re)'}[s]||'var(--mu)'; }
+function statusEmoji(s) { return {new:'📋',called:'📞',interested:'🟢',mandate:'✅',refused:'❌'}[s]||'·'; }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function updStats() {
+  document.getElementById('s-tot').textContent = fiches.length;
+  document.getElementById('s-new').textContent = fiches.filter(f=>f.statut==='new').length;
+  document.getElementById('s-cal').textContent = fiches.filter(f=>f.statut==='called').length;
+  document.getElementById('s-int').textContent = fiches.filter(f=>f.statut==='interested').length;
+  document.getElementById('s-man').textContent = fiches.filter(f=>f.statut==='mandate').length;
+  const today = new Date().toDateString();
+  document.getElementById('s-rl').textContent = fiches.filter(f=>f.date_relance&&new Date(f.date_relance).toDateString()===today).length;
+}
+
+function renderAll() { renderList(); renderRecent(); updStats(); }
+
+
+// ════════════════════════════════════════════════════════
+// FONCTIONS UTILITAIRES MANQUANTES
+// ════════════════════════════════════════════════════════
+
+function showLoading(txt) {
+  document.getElementById('loading-text').textContent = txt || 'Chargement...';
+  document.getElementById('loading-overlay').classList.add('open');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('open');
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'2-digit'});
+}
+function fmtDateTime(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+function dateStr() { return new Date().toISOString().slice(0,10).replace(/-/g,''); }
+function dl(content, filename, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], {type}));
+  a.download = filename; a.click();
+}
+
+function getBadgeClass(type) {
+  const t = (type||'').toLowerCase();
+  if (t.includes('studio')||t.includes('f1')||t.includes('t1')) return 'badge-studio';
+  if (t.includes('f2')||t.includes('t2')) return 'badge-f2';
+  if (t.includes('f3')||t.includes('t3')) return 'badge-f3';
+  if (t.includes('f4')||t.includes('t4')||t.includes('f5')||t.includes('t5')) return 'badge-f4';
+  if (t.includes('maison')) return 'badge-maison';
+  if (t.includes('villa')) return 'badge-villa';
+  return 'badge-autre';
+}
+
+function setSortRelance() {
+  const s = document.getElementById('sort-select');
+  if (s) { s.value = 'relance'; renderList(); }
+}
+
+const VIEW_META = {
+  saisie:    {title:'Nouvelle saisie',      sub:'Colle une ou plusieurs annonces PAP'},
+  liste:     {title:'Toutes les fiches',    sub:'Sélectionne une fiche pour voir le détail'},
+  pipeline:  {title:'Pipeline prospects',   sub:'Vue kanban par statut'},
+  analytics: {title:'Statistiques',         sub:'Analyse de ta prospection'},
+  prix:      {title:'Prix de référence NC', sub:'Calibre le scoring marché'},
+};
+function goView(name, navEl) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  const m = VIEW_META[name];
+  if (m) {
+    document.getElementById('topbar-title').textContent = m.title;
+    document.getElementById('topbar-sub').textContent   = m.sub;
+  }
+  if (name==='pipeline')  renderPipeline();
+  if (name==='analytics') renderAnalytics();
+  if (name==='prix')      renderPrix();
+  if (name==='saisie')    renderRecent();
+}
+
+async function callAPI(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','anthropic-dangerous-direct-browser-calls':'true'},
+    body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.content?.[0]?.text || '';
+}
+function parseJSON(raw) {
+  const clean = raw.replace(/```json|```/g,'').trim();
+  const s = clean.indexOf('{'); const e = clean.lastIndexOf('}');
+  if (s===-1||e===-1) throw new Error('Pas de JSON dans la réponse');
+  return JSON.parse(clean.slice(s, e+1));
+}
+
+function getMarketScore(f) {
+  if (!f.loyer||!f.quartier) return null;
+  const qKey = Object.keys(PRIX_REF).find(k =>
+    f.quartier.toLowerCase().includes(k.toLowerCase()) ||
+    k.toLowerCase().includes(f.quartier.toLowerCase())
+  );
+  if (!qKey) return null;
+  const ref = PRIX_REF[qKey];
+  const t = (f.type_bien||'').toLowerCase();
+  let rp = null;
+  if (t.includes('studio')||t.includes('f1')||t.includes('t1')) rp=ref.studio;
+  else if (t.includes('f2')||t.includes('t2')) rp=ref.f2;
+  else if (t.includes('f3')||t.includes('t3')) rp=ref.f3;
+  else if (t.includes('f4')||t.includes('t4')||t.includes('f5')||t.includes('t5')) rp=ref.f4;
+  else if (t.includes('maison')) rp=ref.maison;
+  else if (t.includes('villa'))  rp=ref.villa;
+  if (!rp) return null;
+  return {refPrice:rp, ecart:Math.round(((f.loyer-rp)/rp)*100), quartier:qKey};
+}
+function mktInfo(ms) {
+  if (!ms) return {cls:'unknown',icon:'❓',title:'Quartier non référencé',color:'var(--tx3)'};
+  if (ms.ecart<=-10) return {cls:'good',icon:'🟢',title:Math.abs(ms.ecart)+'% sous le marché',color:'var(--gr)'};
+  if (ms.ecart<=5)   return {cls:'good',icon:'✅',title:'Dans les prix ('+(ms.ecart>0?'+':'')+ms.ecart+'%)',color:'var(--gr)'};
+  if (ms.ecart<=20)  return {cls:'fair',icon:'🟡',title:ms.ecart+'% au-dessus — argument négociation',color:'var(--or)'};
+  return                    {cls:'high',icon:'🔴',title:ms.ecart+'% trop cher',color:'var(--re)'};
+}
+
+function saveRelance(id) {
+  const f = getF(id); if (!f) return;
+  const v = document.getElementById('rl-date')?.value;
+  f.date_relance = v ? new Date(v).toISOString() : null;
+  save(); renderList(); updStats(); renderDetail(f);
+  if (v) toast('Relance planifiée ✓','ok');
+}
+function clearRelance(id) {
+  const f = getF(id); if (!f) return;
+  f.date_relance = null;
+  save(); renderDetail(f); renderList(); updStats();
+}
+function delFiche(id) {
+  if (!confirm('Supprimer cette fiche ?')) return;
+  fiches = fiches.filter(f=>f.id!==id);
+  if (selId===id) {
+    selId=null;
+    document.getElementById('detail-empty').style.display='flex';
+    document.getElementById('detail-content').style.display='none';
+  }
+  save(); renderAll(); toast('Fiche supprimée','');
+}
+
+function openExport()  { document.getElementById('export-modal').classList.add('open'); }
+function closeExport() { document.getElementById('export-modal').classList.remove('open'); }
+function closeExportIfOutside(e) { if(e.target===document.getElementById('export-modal')) closeExport(); }
+
+function exportCSV() {
+  const cols=['type_bien','quartier','surface','loyer','charges','meuble','parking','nb_pieces','etage','contact_nom','contact_tel','statut','score_interet','source','date_ajout','date_relance','notes','resume'];
+  const rows = fiches.map(f=>cols.map(c=>{
+    const v=f[c]; if(v===null||v===undefined) return '';
+    if(typeof v==='boolean') return v?'Oui':'Non';
+    if(c==='date_ajout'||c==='date_relance') return v?fmtDate(v):'';
+    return String(v).replace(/;/g,',').replace(/\n/g,' ');
+  }).join(';'));
+  dl('\uFEFF'+[cols.join(';'),...rows].join('\n'), 'pige_noumea_'+dateStr()+'.csv', 'text/csv');
+  closeExport(); toast('CSV téléchargé ✓','ok');
+}
+function exportJSON() {
+  dl(JSON.stringify({fiches, prix_ref:PRIX_REF, exported_at:new Date().toISOString()},null,2),
+    'pige_backup_'+dateStr()+'.json','application/json');
+  closeExport(); toast('Backup JSON téléchargé ✓','ok');
+}
+function importJSON() { closeExport(); document.getElementById('import-file').click(); }
+function handleImport(e) {
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try {
+      const d=JSON.parse(ev.target.result);
+      const data=Array.isArray(d)?d:(d.fiches||[]);
+      if(!data.length) throw new Error('Aucune fiche');
+      if(d.prix_ref){PRIX_REF=d.prix_ref;localStorage.setItem('pige_prix_v4',JSON.stringify(PRIX_REF));}
+      if(!confirm('Importer '+data.length+' fiches ?')) return;
+      fiches=[...data,...fiches]; save(); renderAll();
+      toast(data.length+' fiches importées ✓','ok');
+    } catch(err){toast('Fichier invalide : '+err.message,'er');}
+  };
+  r.readAsText(file); e.target.value='';
+}
+function exportAppeler() {
+  const list=fiches.filter(f=>f.statut==='new');
+  if(!list.length){toast('Aucune fiche à appeler','nf');return;}
+  const txt='LISTE À APPELER — '+new Date().toLocaleDateString('fr-FR')+'\n'+'═'.repeat(44)+'\n\n'+
+    list.map((f,i)=>(i+1)+'. '+(f.type_bien||'?')+' — '+(f.quartier||'Nouméa')+' — '+(f.loyer?fmtXPF(f.loyer):'?')+'\n   '+(f.contact_nom||'?')+' · '+(f.contact_tel||'?')+'\n   '+(f.resume||'')).join('\n\n');
+  dl(txt,'appeler_'+dateStr()+'.txt','text/plain');
+  closeExport(); toast('Liste téléchargée ✓','ok');
+}
+function exportRapport() {
+  const now=new Date(); const wk=new Date(now); wk.setDate(now.getDate()-7);
+  const rec=fiches.filter(f=>new Date(f.date_ajout)>=wk);
+  const calls=fiches.reduce((a,f)=>a+(f.call_log?.length||0),0);
+  const man=fiches.filter(f=>f.statut==='mandate');
+  const inter=fiches.filter(f=>f.statut==='interested');
+  const txt=['RAPPORT HEBDO — '+now.toLocaleDateString('fr-FR'),'═'.repeat(44),'',
+    'Total fiches : '+fiches.length,'Nouvelles semaine : '+rec.length,
+    'Appels passés : '+calls,'Mandats : '+man.length,'Intéressés : '+inter.length,
+    'Taux conv. : '+(fiches.length?Math.round((man.length/fiches.length)*100):0)+'%',
+    '','MANDATS :',man.map(f=>'  - '+(f.type_bien||'')+' '+(f.quartier||'')+' · '+(f.contact_nom||'')).join('\n')||'  Aucun',
+    '','INTÉRESSÉS :',inter.map(f=>'  - '+(f.type_bien||'')+' '+(f.quartier||'')+' · '+(f.contact_tel||'')).join('\n')||'  Aucun'].join('\n');
+  dl(txt,'rapport_'+dateStr()+'.txt','text/plain');
+  closeExport(); toast('Rapport téléchargé ✓','ok');
+}
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+renderAll(); updStats();
+
+// Notifications relances du jour
+const rlAujourd = fiches.filter(f=>f.date_relance&&new Date(f.date_relance).toDateString()===new Date().toDateString());
+if (rlAujourd.length) setTimeout(()=>toast(`🔔 ${rlAujourd.length} relance${rlAujourd.length>1?'s':''} prévue${rlAujourd.length>1?'s':''} aujourd'hui !`,'nf'), 900);
+</script>
+</body>
+</html>
