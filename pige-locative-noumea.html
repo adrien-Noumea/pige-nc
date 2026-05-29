@@ -690,7 +690,7 @@ function extractFromText(texte) {
 // EXTRACTION (REGEX — sans IA)
 // ════════════════════════════════════════════════════════
 async function extractAll() {
-  const raw = document.getElementById("paste-input").value.trim();
+  const raw = document.getElementById("paste-in").value.trim();
   if (!raw) { toast("Colle une annonce d'abord !", "er"); return; }
 
   const blocs = raw.split(/\n---\n|\n---\s*$/).map(b => b.trim()).filter(b => b.length > 8);
@@ -739,7 +739,7 @@ async function extractAll() {
   if (created > 0) {
     save();
     renderAll();
-    document.getElementById("paste-input").value = "";
+    document.getElementById("paste-in").value = "";
     toast(created + " fiche" + (created > 1 ? "s" : "") + " créée" + (created > 1 ? "s" : "") + " ✓", "ok");
     goView("liste", document.querySelector(".nav-item[onclick*=\"liste\"]"));
     if (fiches.length > 0) selFiche(fiches[0].id);
