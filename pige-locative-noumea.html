@@ -21,6 +21,17 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--tx);font-siz
 ::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 
+/* ══ SWITCH TRANSACTION ══ */
+#tx-switch{display:flex;align-items:center;gap:4px;background:var(--s2);border:1px solid var(--b1);border-radius:30px;padding:4px;flex-shrink:0;}
+.tx-btn{padding:6px 16px;border-radius:24px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--tx2);font-family:'Syne',sans-serif;transition:all .2s;white-space:nowrap;}
+.tx-btn:hover{color:var(--tx);}
+.tx-btn.tx-loc.active{background:var(--gr);color:#fff;box-shadow:0 2px 8px rgba(39,199,110,.3);}
+.tx-btn.tx-ven.active{background:var(--pu);color:#fff;box-shadow:0 2px 8px rgba(139,92,246,.3);}
+.tx-btn.tx-unk.active{background:var(--or);color:#fff;box-shadow:0 2px 8px rgba(240,160,32,.3);}
+.tx-badge-loc{background:rgba(39,199,110,.12);color:var(--gr);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.tx-badge-ven{background:rgba(139,92,246,.12);color:var(--pu);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.tx-badge-unk{background:rgba(240,160,32,.12);color:var(--or);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;}
+
 /* ══ HEADER ══ */
 #hdr{height:52px;background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 16px;gap:14px;position:relative;z-index:50;}
 .logo{background:var(--acc);color:var(--bg);font-weight:800;font-size:10px;letter-spacing:.12em;padding:4px 8px;border-radius:5px;text-transform:uppercase;flex-shrink:0;}
@@ -37,7 +48,12 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--tx);font-siz
 .hdr-btns{display:flex;gap:6px;flex-shrink:0;}
 
 /* ══ LAYOUT ══ */
-#app{display:grid;grid-template-columns:340px 1fr;height:calc(100vh - 52px);}
+#app{display:grid;grid-template-columns:var(--sb-w,340px) 4px 1fr;height:calc(100vh - 52px);}
+
+/* ══ RESIZER ══ */
+#resizer{background:var(--b1);cursor:col-resize;transition:background .15s;z-index:10;position:relative;}
+#resizer:hover,#resizer.dragging{background:var(--acc);}
+#resizer::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:32px;background:var(--b2);border-radius:2px;}
 
 /* ══ SIDEBAR ══ */
 #sb{background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
@@ -215,7 +231,10 @@ select.inp{cursor:pointer;}
 .kbd{display:inline-block;background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:2px 6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--mu2);}
 
 /* ══ PIPELINE ══ */
-.pipe-wrap{flex:1;overflow-x:auto;padding:14px;display:flex;gap:10px;}
+.pipe-wrap{flex:1;overflow-x:auto;padding:14px;display:flex;gap:10px;position:relative;}
+.pipe-scroll-hint{position:absolute;right:0;top:0;bottom:0;width:52px;background:linear-gradient(to right,transparent,rgba(9,9,12,.95));display:flex;align-items:center;justify-content:center;pointer-events:none;transition:opacity .3s;z-index:5;}
+.pipe-scroll-hint span{font-size:26px;font-weight:900;color:var(--acc);text-shadow:0 0 12px rgba(226,255,63,.8);animation:bounceX .6s ease-in-out infinite;}
+@keyframes bounceX{0%,100%{transform:translateX(-4px);opacity:.6;}50%{transform:translateX(4px);opacity:1;}}
 .pipe-col{flex-shrink:0;width:200px;display:flex;flex-direction:column;gap:6px;}
 .pipe-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:7px 10px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;}
 .p-new{background:rgba(226,255,63,.08);color:var(--acc);}
@@ -310,6 +329,11 @@ select.inp{cursor:pointer;}
     <div class="sc c-pu"><div class="sc-n" id="s-man">0</div><div class="sc-l">Mandats</div></div>
     <div class="sc c-or"><div class="sc-n" id="s-rl">0</div><div class="sc-l">Relances</div></div>
   </div>
+  <div id="tx-switch">
+    <button class="tx-btn tx-loc active" onclick="setTxMode('Location',this)" title="Annonces location">🏠 Location</button>
+    <button class="tx-btn tx-ven" onclick="setTxMode('Vente',this)" title="Annonces vente">💰 Vente</button>
+    <button class="tx-btn tx-unk" onclick="setTxMode('qualifier',this)" title="À qualifier">❓ À qualifier</button>
+  </div>
   <div class="hdr-btns">
     <button class="btn btn-pu btn-sm" onclick="openQCM()">⚡ Mode appels</button>
     <button class="btn btn-g btn-sm" onclick="openExport()">⬇ Export</button>
@@ -383,8 +407,9 @@ select.inp{cursor:pointer;}
     </div>
 
     <!-- TAB PIPELINE -->
-    <div class="tc" id="tc-pipeline">
+    <div class="tc" id="tc-pipeline" style="position:relative;overflow:hidden;">
       <div class="pipe-wrap" id="pipe-wrap"></div>
+      <div class="pipe-scroll-hint" id="pipe-hint"><span>›</span></div>
     </div>
 
     <!-- TAB ANALYTICS -->
@@ -404,6 +429,7 @@ select.inp{cursor:pointer;}
   </div>
 
   <!-- ── PANEL DROIT ── -->
+  <div id="resizer"></div>
   <div id="pr">
     <div id="es" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--mu);text-align:center;padding:40px;">
       <div style="font-size:38px;opacity:.2;">👈</div>
@@ -462,19 +488,11 @@ select.inp{cursor:pointer;}
     <div class="exp-opt" onclick="expJSON()"><div class="exp-icon">💾</div><div><div class="exp-t">Sauvegarde JSON</div><div class="exp-s">Backup complet — reimportable</div></div></div>
     <div class="exp-opt" onclick="impJSON()"><div class="exp-icon">📥</div><div><div class="exp-t">Importer JSON</div><div class="exp-s">Restaurer une sauvegarde</div></div></div>
     <div class="exp-opt" onclick="expAppeler()"><div class="exp-icon">📞</div><div><div class="exp-t">Liste "À appeler"</div><div class="exp-s">Feuille de route — numéros du jour</div></div></div>
-    <div class="exp-opt" onclick="expRapport()"><div class="exp-icon">📄</div><div><div class="exp-t">Rapport hebdo</div><div class="exp-s">Résumé d'activité de la semaine</div></div></div>
-    <button class="btn btn-g btn-sm" onclick="closeExp()" style="width:100%;justify-content:center;margin-top:6px;">Fermer</button>
-  </div>
-</div>
-<input type="file" id="imp-file" accept=".json" style="display:none" onchange="handleImp(event)">
-
-<!-- LOADING -->
-<div id="lov"><div class="spin"></div><div id="ltxt">Analyse en cours...</div></div>
+  </div><!-- exp-modal -->
 <!-- TOAST -->
 <div id="toast"></div>
 
-<script>
-// ════════════════════════════════════════════════════════
+<script>// ════════════════════════════════════════════════════════
 // DONNÉES PRIX DE RÉFÉRENCE NC (XPF/mois)
 // ════════════════════════════════════════════════════════
 const DEFAULT_PRIX_REF = {
@@ -504,7 +522,7 @@ let PRIX_REF = JSON.parse(localStorage.getItem('pige_prix_ref') || JSON.stringif
 // STATE
 // ════════════════════════════════════════════════════════
 let fiches = JSON.parse(localStorage.getItem('pige_v3') || '[]');
-let selId = null;
+let selId = null, txMode = 'Location';
 let tFilter = 'all', sFilter = 'all';
 let qcmList = [], qcmIdx = 0;
 
@@ -549,7 +567,7 @@ async function api(prompt) {
 // DICTIONNAIRE QUARTIERS NC (copié du CRM Nesta)
 // ════════════════════════════════════════════════════════
 const QDB_PIGE = {
-  "Nouméa":["Aérodrome","Anse Vata","Artillerie","Baie des Citrons","Centre-Ville","Ducos","Faubourg Blanchot","Haut-Magenta","Kaméré","Logicoop","Magenta","Montravel","Motor Pool","Normandie","Nouville","Orphelinat","Ouémo","PK4","PK5","PK6","Receiving","Rivière-Salée","Sainte-Marie","Tina","Tindu","Trianon","Tuband","Val Plaisance","Vallée du Tir","Vallée des Colons"],
+  "Nouméa":["Aérodrome","Anse Vata","Artillerie","Baie des Citrons","Centre-Ville","Ducos","Faubourg Blanchot","Haut-Magenta","Kaméré","Logicoop","Magenta","Montravel","Motor Pool","Normandie","Nouville","Orphelinat","Ouémo","Ouen Toro","PK4","PK5","PK6","PK8","Receiving","Rivière-Salée","Sainte-Marie","Tina","Tindu","Trianon","Tuband","Val Plaisance","Vallée du Tir","Vallée des Colons","Vallée du Génie","Kaméré","N'Géa"],
   "Dumbéa":["Auteuil","Dumbéa Centre","Dumbéa-sur-Mer","Katiramona","Koé","Koutio","Panda","Yahoué","ZAC Panda"],
   "Mont-Dore":["Boulari","La Coulée","Mont-Dore Sud","Plum","Robinson","Saint-Louis","Saint-Michel","Vallon-Dore"],
   "Paita":["Gadji","La Tamoa","Nassandou","Nondoué","Savannah"],
@@ -589,6 +607,8 @@ function extractFromText(texte) {
   else if(/\bvilla\b/i.test(t)) f.type_bien = "Villa";
   else if(/\bmaison\b/i.test(t)) f.type_bien = "Maison";
   else if(/appart/i.test(t)) f.type_bien = "Appartement";
+  else if(/\bterrain\b|\bparcelle\b/i.test(t)) f.type_bien = "Terrain";
+  else if(/\bimmeuble\b/i.test(t)) f.type_bien = "Immeuble";
   // Chercher Fx même si villa/maison détecté
   if(!f.nb_pieces) {
     const fx = t.match(/\b[FT](\d)\b/i);
@@ -613,16 +633,49 @@ function extractFromText(texte) {
     else if(/premier\s*étage/i.test(t)) f.etage = "1";
   }
 
+  // ── CHAMBRES ──
+  const chNb = {"une":"1","deux":"2","trois":"3","quatre":"4","cinq":"5"};
+  const chM = t.match(/(\d|une|deux|trois|quatre|cinq)\s*chambre/i);
+  if(chM) f.chambres = chNb[chM[1].toLowerCase()] || chM[1];
+
+  // ── SURFACE TERRASSE / JARDIN ──
+  let terrTotal = 0;
+  const mainSur = f.surface || 9999;
+  [...t.matchAll(/(?:terrasse|balcon)(?:[^.]{0,50}?)(\d+[,.]?\d*)\s*m[²2]/gi)].forEach(m=>{
+    const v = parseFloat(m[1].replace(",","."));
+    if(v < mainSur) terrTotal += v; // exclure si égal à la surface principale
+  });
+  [...t.matchAll(/(\d+[,.]?\d*)\s*m[²2](?:[^.]{0,30}?)(?:terrasse|balcon)/gi)].forEach(m=>{
+    const v = parseFloat(m[1].replace(",","."));
+    if(v < mainSur) terrTotal += v;
+  });
+  if(terrTotal > 0) f.surface_terrasse = Math.round(terrTotal);
+
+  let jardTotal = 0;
+  [...t.matchAll(/(?:jardin|terrain)(?:[^.]{0,50}?)(\d+[,.]?\d*)\s*m[²2]/gi)].forEach(m=>{
+    const v = parseFloat(m[1].replace(",","."));
+    if(v < 50000) jardTotal += v;
+  });
+  [...t.matchAll(/(\d+[,.]?\d*)\s*m[²2](?:[^.]{0,30}?)(?:jardin|terrain)/gi)].forEach(m=>{
+    const v = parseFloat(m[1].replace(",","."));
+    if(v < 50000) jardTotal += v;
+  });
+  if(jardTotal > 0) f.surface_jardin = Math.round(jardTotal);
+
   // ── LOYER ──
   const loyPatterns = [
-    /(?:loyer)[^:\d]*:?\s*([\d][\d\s.]*)\s*(?:XPF|CFP|FCFP|F\b)/i,
+    // Avec mot-clé loyer
+    /(?:loyer)[^:\d]*:?\s*([\d][\d\s.]*)\s*(?:XPF|CFP|FCFP|F)\b/i,
+    // Format XXX.XXX.XXX ou XXX XXX XXX
     /(\d{2,3}[\s.]\d{3}[\s.]\d{3})\s*(?:XPF|CFP|FCFP)/i,
-    /(\d{3}[\s.]\d{3})\s*(?:XPF|CFP|FCFP|F\b)/i,
-    /([1-9]\d{4,6})\s*(?:XPF|CFP|FCFP)/i,
+    // Format XXX.XXX ou XXX XXX suivi de XPF/F (même si HC/CC après)
+    /([1-9]\d{1,2}[\s.]\d{3})\s*(?:XPF|CFP|FCFP|F)\b/i,
+    // Nombre brut 5-7 chiffres suivi de XPF/F
+    /([1-9]\d{4,6})\s*(?:XPF|CFP|FCFP|F)\b/i,
   ];
   for(const pat of loyPatterns){
     const m=t.match(pat);
-    if(m){ const v=m[1].replace(/[\s.]/g,"").replace(/\D/g,""); if(v&&parseInt(v)>10000&&parseInt(v)<2000000){f.loyer=parseInt(v);break;} }
+    if(m){ const v=m[1].replace(/[\s.]/g,"").replace(/\D/g,""); if(v&&parseInt(v)>10000&&parseInt(v)<600000){f.loyer=parseInt(v);break;} }
   }
 
   // ── CHARGES ──
@@ -633,7 +686,7 @@ function extractFromText(texte) {
   f.meuble = /meublé|meuble/i.test(t) && !/non\s*meublé|pas\s*meublé/i.test(t);
 
   // ── PARKING ──
-  f.parking = /\bparking\b|\bgarage\b|place\s*de\s*parking/i.test(t);
+  f.parking = /\bparkings?\b|\bgarages?\b|\d+\s*places?\s*(?:de\s*)?parking|place\s*de\s*parking/i.test(t) && !/pas\s*de\s*(?:parkings?|garages?)|sans\s*(?:parking|garage)|aucun\s*parking/i.test(t);
 
   // ── TÉLÉPHONE NC ──
   const telPatterns = [
@@ -687,7 +740,7 @@ function extractFromText(texte) {
   if(f.surface) parts.push(f.surface+"m²");
   if(f.quartier) parts.push(f.quartier);
   else if(f.ville) parts.push(f.ville);
-  if(f.loyer) parts.push(fmtXPF(f.loyer));
+  if(f.loyer) parts.push((f.transaction==='Vente'&&f.prix_vente?fmtXPF(f.prix_vente):fmtXPF(f.loyer)));
   f.resume = parts.join(" — ") || "Bien locatif NC";
 
   // ── POINTS CLÉS ──
@@ -709,6 +762,60 @@ function extractFromText(texte) {
              /olx/i.test(t) ? "OLX" :
              /whatsapp/i.test(t) ? "WhatsApp" :
              /nc\.net/i.test(t) ? "NC.net" : "Inconnu";
+
+  // ── MODE VENTE / LOCATION / À QUALIFIER ──
+  // Prix > 600k XPF = forcément une vente (loyer max réaliste ~500k)
+  const hasBigPrice = /([1-9]\d{0,2}[\s.]\d{3}[\s.]\d{3})\s*(?:XPF|CFP|FCFP|F)\b/i.test(t);
+  const isVente = /\bvendre\b|\bvente\b|\bà vendre\b|prix de vente|cède bail/i.test(t) || hasBigPrice;
+  const isLoc   = /\blouer\b|\blocation\b|\bloyer\b|\bà louer\b|\bloue\b|\bcharge|\bcc\b|\bhc\b/i.test(t);
+  if(isVente && !isLoc)       f.transaction = "Vente";
+  else if(isLoc && !isVente)  f.transaction = "Location";
+  else if(isLoc && isVente)   f.transaction = "Location"; // loyer prime
+  else if(f.loyer)            f.transaction = "Location"; // loyer détecté = location par défaut
+  else                        f.transaction = "qualifier";
+
+  // ── PRIX DE VENTE ──
+  if(f.transaction === "Vente") {
+    const pvPatterns = [
+      /(\d{1,3}[\s.]\d{3}[\s.]\d{3})\s*(?:XPF|CFP|FCFP|F)\b/i,
+      /([1-9]\d{1,2})\s*(?:millions?|M\b|MXPF|MCFP)/i,
+      /prix[^:\d]*:?\s*([\d][\d\s.]{4,})\s*(?:XPF|CFP|FCFP|F)\b/i,
+    ];
+    for(const p of pvPatterns) {
+      const m = t.match(p);
+      if(m) {
+        let v = m[1].replace(/[\s.]/g,"").replace(/\D/g,"");
+        // Si "millions" dans le texte, multiplier
+        if(/millions?|\bM\b/i.test(m[0]) && parseInt(v) < 1000) v = String(parseInt(v)*1000000);
+        if(v && parseInt(v) > 500000) { f.prix_vente = parseInt(v); break; }
+      }
+    }
+  }
+
+  // ── PRIX DE VENTE ──
+  if(f.transaction === "Vente") {
+    const pvPats = [
+      /(\d{1,3}[\s.]\d{3}[\s.]\d{3})\s*(?:XPF|CFP|FCFP|F)\b/i,
+      /([1-9]\d{1,2})\s*(?:millions?|\bM\b)/i,
+      /prix[^:\d]*:?\s*([\d][\d\s.]{4,})\s*(?:XPF|CFP|FCFP)/i,
+    ];
+    for(const p of pvPats) {
+      const m = t.match(p);
+      if(m) {
+        let v = m[1].replace(/[\s.]/g,"").replace(/\D/g,"");
+        if(/millions?|\bM\b/i.test(m[0]) && parseInt(v)<10000) v=String(parseInt(v)*1000000);
+        if(v && parseInt(v)>500000){f.prix_vente=parseInt(v);break;}
+      }
+    }
+  }
+
+    // ── DESCRIPTION ──
+  // Nettoyer le texte pour créer une description propre
+  f.description = t.replace(/\d{2}[\s.]\d{2}[\s.]\d{2}(?:[\s.]\d{2})?/g, "")
+                   .replace(/\+687[\d\s.]+/g, "")
+                   .replace(/\s{2,}/g, " ")
+                   .trim()
+                   .slice(0, 300);
 
   return f;
 }
@@ -746,6 +853,11 @@ async function extractAll() {
         resume:         d.resume || "",
         score_interet:  d.score_interet || 3,
         source:         d.source || "Inconnu",
+        transaction:    d.transaction || "Location",
+        chambres:       d.chambres || null,
+        surface_terrasse: d.surface_terrasse || null,
+        surface_jardin:   d.surface_jardin || null,
+        description:    d.description || "",
         texte_original: bloc,
         statut:         "new",
         notes:          "",
@@ -812,8 +924,23 @@ function mktLabel(score) {
 // DÉTECTION DOUBLONS
 // ════════════════════════════════════════════════════════
 function detectDups(texte) {
-  const tels = texte.match(/\d[\d\s.]{7,}/g)?.map(t=>t.replace(/\D/g,'')) || [];
-  return fiches.filter(f => f.contact_tel && tels.some(t => t.includes(f.contact_tel.replace(/\D/g,'')) || f.contact_tel.replace(/\D/g,'').includes(t)));
+  const tels = (texte.match(/\d[\d\s.]{6,}/g)||[]).map(t=>t.replace(/\D/g,''));
+  const byTel = fiches.filter(f => f.contact_tel && tels.some(t =>
+    t.length>5 && (t.includes(f.contact_tel.replace(/\D/g,''))||f.contact_tel.replace(/\D/g,'').includes(t))
+  ));
+  if(byTel.length) return byTel;
+  const surM = texte.match(/(\d{2,4})\s*m[²2]/i);
+  const sur = surM ? parseInt(surM[1]) : null;
+  const loyM = texte.match(/([1-9]\d{4,6})/);
+  const loy = loyM ? parseInt(loyM[1]) : null;
+  if(sur && loy) {
+    return fiches.filter(f =>
+      f.surface && Math.abs(f.surface-sur)<=3 &&
+      f.loyer && Math.abs(f.loyer-loy)<=2000 &&
+      f.quartier && texte.toLowerCase().includes(normQ(f.quartier))
+    );
+  }
+  return [];
 }
 
 document.getElementById('paste-in').addEventListener('input', function() {
@@ -874,6 +1001,8 @@ function renderList() {
   const sort = document.getElementById('sort-sel')?.value||'date_desc';
   const today = new Date().toDateString();
   let list = [...fiches];
+  // Filtre par mode transaction (Location/Vente/À qualifier)
+  list = list.filter(f => (f.transaction||'Location') === txMode);
   if (tFilter!=='all') list = list.filter(f=>matchType(f.type_bien,tFilter));
   if (sFilter!=='all') list = list.filter(f=>f.statut===sFilter);
   if (q) list = list.filter(f=>[f.quartier,f.contact_nom,f.contact_tel,f.type_bien,f.resume,f.notes].join(' ').toLowerCase().includes(q));
@@ -934,9 +1063,19 @@ function renderRecent() {
 // ════════════════════════════════════════════════════════
 // PIPELINE
 // ════════════════════════════════════════════════════════
+function updatePipeHint() {
+  const wrap = document.getElementById('pipe-wrap');
+  const hint = document.getElementById('pipe-hint');
+  if(!wrap || !hint) return;
+  const canScroll = wrap.scrollWidth > wrap.clientWidth + 10;
+  const atEnd = wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 10;
+  hint.style.opacity = (canScroll && !atEnd) ? '1' : '0';
+}
+
 function renderPipeline() {
   const cols = [{k:'new',l:'À appeler',c:'p-new'},{k:'called',l:'Appelé',c:'p-called'},{k:'interested',l:'Intéressé',c:'p-int'},{k:'mandate',l:'Mandat ✓',c:'p-man'},{k:'refused',l:'Refus',c:'p-ref'}];
-  document.getElementById('pipe-wrap').innerHTML = cols.map(col => {
+  const pw = document.getElementById('pipe-wrap');
+  pw.innerHTML = cols.map(col => {
     const items = fiches.filter(f=>f.statut===col.k);
     return `<div class="pipe-col">
       <div class="pipe-hdr ${col.c}"><span>${col.l}</span><span>${items.length}</span></div>
@@ -954,26 +1093,49 @@ function renderPipeline() {
 // ANALYTICS
 // ════════════════════════════════════════════════════════
 function renderAnalytics() {
-  const total = fiches.length;
+  const txFiches = getTxFiches();
+  const total = txFiches.length;
   const statuts = ['new','called','interested','mandate','refused'];
   const counts = {};
-  statuts.forEach(s => counts[s] = fiches.filter(f=>f.statut===s).length);
+  statuts.forEach(s => counts[s] = txFiches.filter(f=>f.statut===s).length);
   const convRate = total ? Math.round((counts.mandate/total)*100) : 0;
   const intRate = total ? Math.round(((counts.interested+counts.mandate)/Math.max(counts.called+counts.interested+counts.mandate+counts.refused,1))*100) : 0;
 
-  // Par quartier
+  // Par quartier — stats + comparaison prix référence
   const qMap = {};
-  fiches.forEach(f => {
+  txFiches.forEach(f => {
     const q = f.quartier||'Inconnu';
-    if (!qMap[q]) qMap[q] = {total:0,mandate:0,interested:0};
-    qMap[q].total++; if (f.statut==='mandate') qMap[q].mandate++; if (f.statut==='interested') qMap[q].interested++;
+    if (!qMap[q]) qMap[q] = {total:0,mandate:0,interested:0,loyers:[]};
+    qMap[q].total++;
+    if (f.statut==='mandate') qMap[q].mandate++;
+    if (f.statut==='interested') qMap[q].interested++;
+    if (f.loyer) qMap[q].loyers.push(f.loyer);
   });
-  const qRows = Object.entries(qMap).sort((a,b)=>b[1].total-a[1].total).slice(0,8).map(([q,d])=>
-    `<tr><td>${q}</td><td>${d.total}</td><td class="mono">${d.mandate}</td><td style="color:var(--gr)">${d.total?Math.round((d.mandate/d.total)*100):0}%</td></tr>`
-  ).join('');
 
-  // Loyer moyen
-  const loyerData = fiches.filter(f=>f.loyer);
+  const qRows = Object.entries(qMap).sort((a,b)=>b[1].total-a[1].total).slice(0,10).map(([q,d]) => {
+    const moyPige = d.loyers.length ? Math.round(d.loyers.reduce((a,b)=>a+b,0)/d.loyers.length) : null;
+    // Trouver le prix de référence pour ce quartier
+    const refKey = Object.keys(PRIX_REF).find(k => normQ(k) === normQ(q) || normQ(k).includes(normQ(q)) || normQ(q).includes(normQ(k)));
+    const refPrix = refKey ? PRIX_REF[refKey] : null;
+    const refMoy = refPrix ? Math.round((refPrix.studio+refPrix.f2+refPrix.f3+refPrix.f4)/4) : null;
+    const ecart = (moyPige && refMoy) ? Math.round(((moyPige-refMoy)/refMoy)*100) : null;
+    const ecartHtml = ecart !== null
+      ? `<span style="color:${ecart<=0?'var(--gr)':ecart<=15?'var(--or)':'var(--re)'};">${ecart>0?'+':''}${ecart}%</span>`
+      : '<span style="color:var(--mu2)">—</span>';
+    const moyHtml = moyPige ? fmtXPF(moyPige) : '—';
+    return `<tr>
+      <td style="font-weight:600">${q}</td>
+      <td>${d.total}</td>
+      <td class="mono">${d.mandate}</td>
+      <td style="color:var(--gr)">${d.total?Math.round((d.mandate/d.total)*100):0}%</td>
+      <td style="font-size:10px;color:var(--mu2)">${moyHtml}</td>
+      <td style="font-size:10px;color:var(--mu2)">${refMoy?fmtXPF(refMoy):'—'}</td>
+      <td>${ecartHtml}</td>
+    </tr>`;
+  }).join('');
+
+  // Loyer moyen global
+  const loyerData = txFiches.filter(f=>f.loyer);
   const moyLoyer = loyerData.length ? Math.round(loyerData.reduce((a,f)=>a+f.loyer,0)/loyerData.length) : 0;
 
   // Relances cette semaine
@@ -981,25 +1143,38 @@ function renderAnalytics() {
   const relSemaine = fiches.filter(f=>f.date_relance&&new Date(f.date_relance)<=week&&new Date(f.date_relance)>=now).length;
 
   document.getElementById('ana-wrap').innerHTML = `
-    <div style="margin-bottom:14px;"><div class="st mb8">Vue d'ensemble</div></div>
+    <div style="margin-bottom:14px;"><div class="st mb8">Vue d'ensemble — ${txMode==='Location'?'🏠 Location':txMode==='Vente'?'💰 Vente':'❓ À qualifier'}</div></div>
     <div class="ana-grid">
       <div class="ana-card"><div class="ana-val" style="color:var(--acc)">${total}</div><div class="ana-lbl">Annonces en pige</div></div>
       <div class="ana-card"><div class="ana-val" style="color:var(--pu)">${counts.mandate}</div><div class="ana-lbl">Mandats signés</div><div class="conv-bar"><div class="conv-fill" style="width:${convRate}%"></div></div><div class="ana-sub">${convRate}% taux de conversion</div></div>
-      <div class="ana-card"><div class="ana-val" style="color:var(--gr)">${counts.interested}</div><div class="ana-lbl">Propriétaires intéressés</div><div class="ana-sub">${intRate}% taux d'intérêt appels</div></div>
-      <div class="ana-card"><div class="ana-val" style="color:var(--or)">${relSemaine}</div><div class="ana-lbl">Relances cette semaine</div></div>
-      <div class="ana-card"><div class="ana-val" style="color:var(--bl);font-size:18px;">${moyLoyer?fmtXPF(moyLoyer):'—'}</div><div class="ana-lbl">Loyer moyen en pige</div></div>
-      <div class="ana-card"><div class="ana-val" style="color:var(--te)">${counts.new}</div><div class="ana-lbl">À appeler</div></div>
+      <div class="ana-card"><div class="ana-val" style="color:var(--bl)">${counts.called}</div><div class="ana-lbl">Appelés</div></div>
+      <div class="ana-card"><div class="ana-val" style="color:var(--gr)">${counts.interested}</div><div class="ana-lbl">Intéressés</div></div>
+      <div class="ana-card"><div class="ana-val" style="color:var(--or)">${relSemaine}</div><div class="ana-lbl">Relances 7 jours</div></div>
+      <div class="ana-card"><div class="ana-val" style="color:var(--te)">${moyLoyer?fmtXPF(moyLoyer):'—'}</div><div class="ana-lbl">Loyer moyen pige</div></div>
     </div>
-    <div class="st mb8" style="margin-top:8px;">Par quartier</div>
-    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
-      <table class="qk-table"><thead><tr><th>Quartier</th><th>Fiches</th><th>Mandats</th><th>Conv.</th></tr></thead>
-      <tbody>${qRows||'<tr><td colspan="4" style="color:var(--mu);text-align:center;">Aucune donnée</td></tr>'}</tbody></table>
-    </div>`;
+
+    <div style="margin:20px 0 10px;"><div class="st mb8">Performance & marché par quartier</div></div>
+    <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead>
+        <tr style="color:var(--mu2);text-transform:uppercase;font-size:9px;letter-spacing:.06em;border-bottom:1px solid var(--b1);">
+          <th style="text-align:left;padding:6px 8px;">Quartier</th>
+          <th style="padding:6px 8px;">Fiches</th>
+          <th style="padding:6px 8px;">Mandats</th>
+          <th style="padding:6px 8px;">Conv.</th>
+          <th style="padding:6px 8px;">Moy. pige</th>
+          <th style="padding:6px 8px;">Référence</th>
+          <th style="padding:6px 8px;">Écart</th>
+        </tr>
+      </thead>
+      <tbody>${qRows||'<tr><td colspan="7" style="text-align:center;color:var(--mu2);padding:20px;">Aucune donnée</td></tr>'}</tbody>
+    </table>
+    </div>
+    <div style="margin-top:8px;font-size:10px;color:var(--mu2);">💡 Écart = loyer moyen des annonces pige vs votre référence. Négatif = le marché est sous votre référence → à ajuster.</div>
+  `;
 }
 
-// ════════════════════════════════════════════════════════
-// PRIX REF
-// ════════════════════════════════════════════════════════
+
 function renderPrixRef() {
   const types = [{k:'studio',l:'Studio'},{k:'f2',l:'F2'},{k:'f3',l:'F3'},{k:'f4',l:'F4+'},{k:'maison',l:'Maison'},{k:'villa',l:'Villa'}];
   document.getElementById('prix-ref-grid').innerHTML = `
@@ -1036,6 +1211,17 @@ function renderDetail(f) {
   const ms = computeMarketScore(f);
   const ml = mktLabel(ms);
   const stars = '★'.repeat(f.score_interet||3)+'☆'.repeat(5-(f.score_interet||3));
+  // Boutons transaction
+  const txLoc = f.transaction==='Location'||!f.transaction;
+  const txVen = f.transaction==='Vente';
+  const txUnk = f.transaction==='qualifier';
+  const txBtnHtml = `<div style="display:flex;gap:8px;margin-bottom:20px;align-items:center;flex-wrap:wrap;">
+    <span style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;">Transaction :</span>
+    <button class="btn btn-sm ${txLoc?'btn-gr':''}" onclick="setFicheTransaction('${f.id}','Location')">🏠 Location</button>
+    <button class="btn btn-sm ${txVen?'btn-pu':''}" onclick="setFicheTransaction('${f.id}','Vente')">💰 Vente</button>
+    <button class="btn btn-sm ${txUnk?'btn-or':''}" onclick="setFicheTransaction('${f.id}','qualifier')">❓ À qualifier</button>
+  </div>`;
+
   const statusMap = {new:{l:'À appeler',c:'on-new'},called:{l:'Appelé',c:'on-called'},interested:{l:'Intéressé',c:'on-interested'},mandate:{l:'Mandat signé',c:'on-mandate'},refused:{l:'Refus',c:'on-refused'}};
   const rlVal = f.date_relance?f.date_relance.split('T')[0]:'';
 
@@ -1097,16 +1283,22 @@ function renderDetail(f) {
     <div class="dh">
       <div>
         <div class="dh-title">${f.type_bien} — ${f.quartier||'Nouméa'}</div>
-        <div class="dh-meta">${f.resume||''} &nbsp;·&nbsp; <span style="color:var(--or)">${stars}</span> &nbsp;·&nbsp; ${new Date(f.date_ajout).toLocaleDateString('fr-FR')} &nbsp;·&nbsp; ${f.source||'Source ?'}</div>
+        <div class="dh-meta">
+          ${f.surface?f.surface+'m²':''}${f.surface_terrasse?' + terrasse '+f.surface_terrasse+'m²':''}${f.surface_jardin?' + jardin '+f.surface_jardin+'m²':''} &nbsp;·&nbsp;
+          <span style="color:var(--or)">${stars}</span> &nbsp;·&nbsp; ${new Date(f.date_ajout).toLocaleDateString('fr-FR')} &nbsp;·&nbsp; ${f.source||'?'}
+        </div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
-        <div class="dh-prix">${f.loyer?fmtXPF(f.loyer):'?'}</div>
+        <div class="dh-prix">${f.transaction==='Vente'&&f.prix_vente?fmtXPF(f.prix_vente):f.loyer?fmtXPF(f.loyer):'?'}</div>
         <div class="dh-charges">${f.charges||''}</div>
       </div>
     </div>
 
     <div class="dgrid">
-      <div class="dbox"><div class="dbox-l">Surface</div><div class="dbox-v">${f.surface?f.surface+' m²':'—'}</div></div>
+      <div class="dbox"><div class="dbox-l">Surface</div><div class="dbox-v">
+        ${f.surface?f.surface+' m²':'—'}
+        ${f.surface_terrasse||f.surface_jardin ? '<span style="color:var(--mu2);font-size:10px;margin-left:4px;">+ '+(f.surface_terrasse?'terrasse '+f.surface_terrasse+'m² ':'')+( f.surface_jardin?'jardin '+f.surface_jardin+'m²':'' )+'</span>' : ''}
+      </div></div>
       <div class="dbox"><div class="dbox-l">Pièces</div><div class="dbox-v">${f.nb_pieces||f.type_bien||'—'}</div></div>
       <div class="dbox"><div class="dbox-l">Étage</div><div class="dbox-v">${f.etage||'—'}</div></div>
       <div class="dbox"><div class="dbox-l">Meublé</div><div class="dbox-v">${f.meuble?'✓ Oui':'✕ Non'}</div></div>
@@ -1121,6 +1313,7 @@ function renderDetail(f) {
     <div class="st mb8">Scoring marché NC</div>
     ${mktHtml}
 
+    ${txBtnHtml}
     <div class="st mb8">Statut prospect</div>
     <div class="ssel">
       ${Object.entries(statusMap).map(([k,v])=>`<button class="sbtn ${f.statut===k?v.c:''}" onclick="updStatus('${f.id}','${k}')">${v.l}</button>`).join('')}
@@ -1220,7 +1413,24 @@ function qcmSaveNotes() {
 }
 
 document.addEventListener('keydown', e => {
-  if (!document.getElementById('qcm').classList.contains('open')) return;
+  // Raccourcis globaux (hors QCM et hors champs de saisie)
+  if (!document.getElementById('qcm').classList.contains('open')) {
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+    if (e.key === 'n' || e.key === 'N') {
+      // N = nouvelle saisie
+      swTab('saisie', document.querySelector('.tab[onclick*="saisie"]'));
+      setTimeout(() => document.getElementById('paste-in')?.focus(), 100);
+    }
+    if (e.key === 'Escape' && selId) {
+      // Escape = fermer le détail
+      selId = null;
+      document.getElementById('es').style.display = '';
+      document.getElementById('dv').style.display = 'none';
+      renderList();
+    }
+    return;
+  }
+  // QCM shortcuts
   if (e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT') return;
   if (e.key==='1') qcmAction('called','Répondu');
   else if (e.key==='2') qcmAction('new','Pas répondu');
@@ -1239,6 +1449,14 @@ function selFiche(id) {
   renderList();
   const f = getF(id);
   if (f) renderDetail(f);
+}
+
+function setFicheTransaction(id, tx) {
+  const f = getF(id); if(!f) return;
+  f.transaction = tx;
+  save(); renderAll();
+  renderDetail(f);
+  toast('Transaction mise à jour → ' + (tx==='qualifier'?'À qualifier':tx) + ' ✓', 'ok');
 }
 
 function updStatus(id, statut) {
@@ -1424,6 +1642,10 @@ function statusColor(s) { return {new:'var(--acc)',called:'var(--bl)',interested
 function statusEmoji(s) { return {new:'📋',called:'📞',interested:'🟢',mandate:'✅',refused:'❌'}[s]||'·'; }
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+function getTxFiches() {
+  return fiches.filter(f => (f.transaction||'Location') === txMode);
+}
+
 function updStats() {
   document.getElementById('s-tot').textContent = fiches.length;
   document.getElementById('s-new').textContent = fiches.filter(f=>f.statut==='new').length;
@@ -1480,6 +1702,26 @@ function setSortRelance() {
   if (s) { s.value = 'relance'; renderList(); }
 }
 
+function setTxMode(mode, btn) {
+  txMode = mode;
+  document.querySelectorAll('.tx-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  // Mettre à jour le header
+  const labels = {Location:'🏠 Pige Location — Nouméa', Vente:'💰 Pige Vente — Nouméa', qualifier:'❓ À qualifier'};
+  const tt = document.getElementById('topbar-title');
+  if(tt) tt.textContent = labels[mode] || 'Pige Locative';
+  // Réinitialiser les filtres type
+  tFilter = 'all';
+  sFilter = 'all';
+  document.querySelectorAll('#fp-type .pill').forEach(p => p.classList.toggle('on', p.dataset.f==='all'));
+  document.querySelectorAll('#fp-status .pill').forEach(p => p.classList.toggle('on', p.dataset.fs==='all'));
+  selId = null;
+  document.getElementById('es').style.display = '';
+  document.getElementById('dv').style.display = 'none';
+  renderAll();
+  updStats();
+}
+
 const VIEW_META = {
   saisie:    {title:'Nouvelle saisie',      sub:'Colle une ou plusieurs annonces PAP'},
   liste:     {title:'Toutes les fiches',    sub:'Sélectionne une fiche pour voir le détail'},
@@ -1497,7 +1739,7 @@ function goView(name, navEl) {
     const tt=document.getElementById('topbar-title'); if(tt) tt.textContent=m.title;
     const ts=document.getElementById('topbar-sub'); if(ts) ts.textContent=m.sub;
   }
-  if (name==='pipeline')  renderPipeline();
+  if (name==='pipeline') { renderPipeline(); setTimeout(updatePipeHint, 50); }
   if (name==='analytics') renderAnalytics();
   if (name==='prix')      renderPrix();
   if (name==='saisie')    renderRecent();
@@ -1636,9 +1878,43 @@ function exportRapport() {
 // ════════════════════════════════════════════════════════
 renderAll(); updStats();
 
+// ── PIPELINE SCROLL HINT ──
+document.getElementById('pipe-wrap')?.addEventListener('scroll', updatePipeHint);
+window.addEventListener('resize', updatePipeHint);
+
+// ── SIDEBAR RESIZER ──
+(function(){
+  const resizer = document.getElementById('resizer');
+  const app = document.getElementById('app');
+  if(!resizer) return;
+  let startX, startW;
+  resizer.addEventListener('mousedown', e => {
+    startX = e.clientX;
+    startW = parseInt(getComputedStyle(app).gridTemplateColumns.split(' ')[0]);
+    resizer.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if(!resizer.classList.contains('dragging')) return;
+    const dx = e.clientX - startX;
+    const newW = Math.min(Math.max(startW + dx, 240), 600);
+    app.style.gridTemplateColumns = newW + 'px 4px 1fr';
+  });
+  document.addEventListener('mouseup', () => {
+    if(!resizer.classList.contains('dragging')) return;
+    resizer.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+})();
+
 // Notifications relances du jour
 const rlAujourd = fiches.filter(f=>f.date_relance&&new Date(f.date_relance).toDateString()===new Date().toDateString());
 if (rlAujourd.length) setTimeout(()=>toast(`🔔 ${rlAujourd.length} relance${rlAujourd.length>1?'s':''} prévue${rlAujourd.length>1?'s':''} aujourd'hui !`,'nf'), 900);
+
+// Notifications relances du jour
 </script>
 </body>
 </html>
